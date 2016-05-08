@@ -1,15 +1,39 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "System.AppDomain Class Library",
-  "authors": [ "Shmueli" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
-  "frameworks": {
-    "net451": { },
-    "dotnet5.4": {
-      "dependencies": {
+  "description": "Exposes the hidden System.AppDomain in .NET Core",
+  "authors":
+  [
+    "Shmueli Englard"
+  ],
+  "tags":
+  [
+    "AppDomain",
+    ".NET Core"
+  ],
+  "projectUrl": "https://github.com/SamuelEnglard/System.AppDomain",
+  "licenseUrl": "https://github.com/SamuelEnglard/System.AppDomain/blob/master/LICENSE",
+  "copyright": "Copyright 2016 Shmueli Englard",
+  "language": "en-us",
+  "owners":
+  [
+    "Shmueli Englard"
+  ],
+  "summary": "Exposes the hidden System.AppDomain in .NET Core",
+  "title": "System.AppDomain",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/SamuelEnglard/System.AppDomain.git"
+  },
+  "frameworks":
+  {
+    "net451":
+    {
+    },
+    "dotnet5.4":
+    {
+      "dependencies":
+      {
         "Microsoft.CSharp": "4.0.1-beta-23516",
         "System.Collections": "4.0.11-beta-23516",
         "System.Linq": "4.0.1-beta-23516",
