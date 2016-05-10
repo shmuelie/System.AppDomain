@@ -20,9 +20,14 @@ namespace System
         {
             getCurrentDomain = Expression.Lambda<Func<object>>(Expression.Property(null, RealType.GetProperty("CurrentDomain", BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public)), true, Enumerable.Repeat<ParameterExpression>(null, 0)).Compile();
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
-            EventInfo assemblyResolveEvent = RealType.GetEvent("AssemblyResolve", BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic);
-            assemblyResolveAdd = assemblyResolveEvent.AddMethod;
-            assemblyResolveRemove = assemblyResolveEvent.RemoveMethod;
+            AddEventMethods("AssemblyResolve", out assemblyResolveAdd, out assemblyResolveRemove);
+        }
+
+        private static void AddEventMethods(string eventName, out MethodInfo add, out MethodInfo remove)
+        {
+            EventInfo eventInfo = RealType.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            add = eventInfo.AddMethod;
+            remove = eventInfo.RemoveMethod;
         }
 
         private static AppDomain CreateCurrentDomain()
@@ -53,33 +58,39 @@ namespace System
                 throw new ArgumentException($"'{nameof(appDomain)}' must be a real System.AppDomain", nameof(appDomain));
             }
             this.appDomain = appDomain;
-            ParameterExpression argsParameter = Expression.Parameter(ResolveEventArgs.RealType, "args");
-            Expression<Func<ResolveEventArgs, Assembly>> onAssemblyResolve = args => OnAssemblyResolve(this, args);
-            assemblyResolveReal = Expression.Lambda(RealResolveEventHandler, Expression.Invoke(onAssemblyResolve, Enumerable.Repeat(Expression.New(typeof(ResolveEventArgs).GetConstructor(new[] { typeof(object) }), Enumerable.Repeat(argsParameter, 1)), 1)), Expression.Parameter(typeof(object), "sender"), argsParameter).Compile();
+            assemblyResolveReal = CreateResolveEventHandler(args => OnAssemblyResolve(args));
         }
 
-        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
+        private Delegate CreateResolveEventHandler(Expression<Func<ResolveEventArgs, Assembly>> onResolve)
         {
-            return assemblyResolve?.Invoke(sender, args);
+            ParameterExpression argsParameter = Expression.Parameter(ResolveEventArgs.RealType, "args");
+            return Expression.Lambda(RealResolveEventHandler, Expression.Invoke(onResolve, Enumerable.Repeat(Expression.New(typeof(ResolveEventArgs).GetConstructor(new[] { typeof(object) }), Enumerable.Repeat(argsParameter, 1)), 1)), Expression.Parameter(typeof(object), "sender"), argsParameter).Compile();
+        }
+
+        private void EventWrapper(MulticastDelegate @delegate, Delegate realDelegate, MethodInfo manipulationInfo)
+        {
+            if (@delegate == null || @delegate.GetInvocationList().Length == 0)
+            {
+                manipulationInfo.Invoke(appDomain, new[] { realDelegate });
+            }
+        }
+
+        private Assembly OnAssemblyResolve(ResolveEventArgs args)
+        {
+            return assemblyResolve?.Invoke(this, args);
         }
 
         public event ResolveEventHandler AssemblyResolve
         {
             add
             {
-                if (assemblyResolve == null || assemblyResolve.GetInvocationList().Length == 0)
-                {
-                    assemblyResolveAdd.Invoke(appDomain, new[] { assemblyResolveReal });
-                }
+                EventWrapper(assemblyResolve, assemblyResolveReal, assemblyResolveAdd);
                 assemblyResolve = (ResolveEventHandler)Delegate.Combine(assemblyResolve, value);
             }
             remove
             {
                 assemblyResolve = (ResolveEventHandler)Delegate.Remove(assemblyResolve, value);
-                if (assemblyResolve == null || assemblyResolve.GetInvocationList().Length == 0)
-                {
-                    assemblyResolveRemove.Invoke(appDomain, new[] { assemblyResolveReal });
-                }
+                EventWrapper(assemblyResolve, assemblyResolveReal, assemblyResolveRemove);
             }
         }
     }
