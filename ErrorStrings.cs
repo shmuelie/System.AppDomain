@@ -1,6 +1,6 @@
 ﻿namespace System
 {
-    public static class ErrorStrings
+    internal static class ErrorStrings
     {
         public static string CannotBeNull(string paramName)
         {
