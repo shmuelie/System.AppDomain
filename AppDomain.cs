@@ -9,8 +9,8 @@ namespace System
 {
     public sealed class AppDomain
     {
-        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType("System.AppDomain");
-        internal static readonly Type RealResolveEventHandler = typeof(string).GetTypeInfo().Assembly.GetType("System.ResolveEventHandler");
+        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType(typeof(AppDomain).FullName);
+        internal static readonly Type RealResolveEventHandler = typeof(string).GetTypeInfo().Assembly.GetType(typeof(ResolveEventHandler).FullName);
         private static readonly Lazy<AppDomain> currentDomain;
         private static readonly MethodInfo assemblyResolveAdd;
         private static readonly MethodInfo assemblyResolveRemove;
@@ -18,7 +18,7 @@ namespace System
         static AppDomain()
         {
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
-            AddEventMethods("AssemblyResolve", out assemblyResolveAdd, out assemblyResolveRemove);
+            AddEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
         }
 
         private static void AddEventMethods(string eventName, out MethodInfo add, out MethodInfo remove)
