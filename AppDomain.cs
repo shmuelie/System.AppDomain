@@ -11,14 +11,12 @@ namespace System
     {
         internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType("System.AppDomain");
         internal static readonly Type RealResolveEventHandler = typeof(string).GetTypeInfo().Assembly.GetType("System.ResolveEventHandler");
-        private static readonly Func<object> getCurrentDomain;
         private static readonly Lazy<AppDomain> currentDomain;
         private static readonly MethodInfo assemblyResolveAdd;
         private static readonly MethodInfo assemblyResolveRemove;
 
         static AppDomain()
         {
-            getCurrentDomain = Expression.Lambda<Func<object>>(Expression.Property(null, RealType.GetProperty("CurrentDomain", BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public)), true, Enumerable.Repeat<ParameterExpression>(null, 0)).Compile();
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
             AddEventMethods("AssemblyResolve", out assemblyResolveAdd, out assemblyResolveRemove);
         }
@@ -32,7 +30,7 @@ namespace System
 
         private static AppDomain CreateCurrentDomain()
         {
-            return new AppDomain(getCurrentDomain());
+            return new AppDomain(RealType.GetProperty(nameof(CurrentDomain), BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public).GetValue(null));
         }
 
         public static AppDomain CurrentDomain
