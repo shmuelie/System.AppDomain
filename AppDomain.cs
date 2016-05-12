@@ -14,9 +14,11 @@ namespace System
         private static readonly Lazy<AppDomain> currentDomain;
         private static readonly MethodInfo assemblyResolveAdd;
         private static readonly MethodInfo assemblyResolveRemove;
+        private static readonly ConstructorInfo resolveEventArgsConstructor;
 
         static AppDomain()
         {
+            resolveEventArgsConstructor = typeof(ResolveEventArgs).GetConstructor(new[] { typeof(object) });
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
             AddEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
         }
@@ -56,13 +58,43 @@ namespace System
                 throw new ArgumentException($"'{nameof(appDomain)}' must be a real System.AppDomain", nameof(appDomain));
             }
             this.appDomain = appDomain;
-            assemblyResolveReal = CreateResolveEventHandler(args => OnAssemblyResolve(args));
+            assemblyResolveReal = CreateResolveEventHandler(nameof(OnAssemblyResolve));
         }
 
-        private Delegate CreateResolveEventHandler(Expression<Func<ResolveEventArgs, Assembly>> onResolve)
+        private Delegate CreateResolveEventHandler(string methodName)
         {
+            ParameterExpression eParameter = Expression.Parameter(typeof(ResolveEventArgs), "e");
             ParameterExpression argsParameter = Expression.Parameter(ResolveEventArgs.RealType, "args");
-            return Expression.Lambda(RealResolveEventHandler, Expression.Invoke(onResolve, Enumerable.Repeat(Expression.New(typeof(ResolveEventArgs).GetConstructor(new[] { typeof(object) }), Enumerable.Repeat(argsParameter, 1)), 1)), Expression.Parameter(typeof(object), "sender"), argsParameter).Compile();
+            return Expression.Lambda(
+                RealResolveEventHandler,
+                Expression.Invoke(
+                    Expression.Lambda<Func<ResolveEventArgs, Assembly>>(
+                        Expression.Call(
+                            Expression.Constant(
+                                this, typeof(AppDomain)),
+                            typeof(AppDomain).GetMethod(
+                                methodName,
+                                BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic),
+                            Enumerable.Repeat(eParameter, 1)),
+                        Enumerable.Repeat(
+                            eParameter,
+                            1)),
+                    Enumerable.Repeat(
+                        Expression.New(
+                            resolveEventArgsConstructor,
+                            Enumerable.Repeat(
+                                argsParameter,
+                                1)),
+                        1)),
+                false,
+                (new ParameterExpression[] {
+                    Expression.Parameter(
+                        typeof(object),
+                        "sender"
+                    ),
+                    argsParameter
+                }).AsEnumerable()
+                ).Compile();
         }
 
         private void EventWrapper(MulticastDelegate @delegate, Delegate realDelegate, MethodInfo manipulationInfo)
