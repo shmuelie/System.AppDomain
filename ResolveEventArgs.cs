@@ -81,10 +81,7 @@ namespace System
         /// <param name="realEvent">The internal version.</param>
         internal ResolveEventArgs(object realEvent)
         {
-            if (ReferenceEquals(realEvent, null))
-            {
-                throw new ArgumentNullException(nameof(realEvent), $"'{nameof(realEvent)}' cannot be null (Nothing in Visual Basic)");
-            }
+            realEvent.NotNull(nameof(realEvent));
             if (!RealType.IsInstanceOfType(realEvent))
             {
                 throw new ArgumentException($"'{nameof(realEvent)}' must be a real System.ResolveEventArgs", nameof(realEvent));

@@ -49,10 +49,7 @@ namespace System
 
         internal AppDomain(object appDomain)
         {
-            if (ReferenceEquals(appDomain, null))
-            {
-                throw new ArgumentNullException(nameof(appDomain), $"'{nameof(appDomain)}' cannot be null (Nothing in Visual Basic)");
-            }
+            appDomain.NotNull(nameof(appDomain));
             if (!RealType.IsInstanceOfType(appDomain))
             {
                 throw new ArgumentException($"'{nameof(appDomain)}' must be a real System.AppDomain", nameof(appDomain));
