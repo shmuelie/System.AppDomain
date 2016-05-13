@@ -14,6 +14,10 @@ namespace System
         private static readonly Lazy<AppDomain> currentDomain;
         private static readonly MethodInfo assemblyResolveAdd;
         private static readonly MethodInfo assemblyResolveRemove;
+        private static readonly MethodInfo typeResolveAdd;
+        private static readonly MethodInfo typeResolveRemove;
+        private static readonly MethodInfo resourceResolveAdd;
+        private static readonly MethodInfo resourceResolveRemove;
         private static readonly ConstructorInfo resolveEventArgsConstructor;
 
         static AppDomain()
@@ -21,6 +25,8 @@ namespace System
             resolveEventArgsConstructor = typeof(ResolveEventArgs).GetConstructor(new[] { typeof(object) });
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
             AddEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
+            AddEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
+            AddEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
         }
 
         private static void AddEventMethods(string eventName, out MethodInfo add, out MethodInfo remove)
@@ -46,6 +52,10 @@ namespace System
         private readonly object appDomain;
         private readonly Delegate assemblyResolveReal;
         private ResolveEventHandler assemblyResolve;
+        private readonly Delegate typeResolveReal;
+        private ResolveEventHandler typeResolve;
+        private readonly Delegate resourceResolveReal;
+        private ResolveEventHandler resourceResolve;
 
         internal AppDomain(object appDomain)
         {
@@ -56,6 +66,8 @@ namespace System
             }
             this.appDomain = appDomain;
             assemblyResolveReal = CreateResolveEventHandler(nameof(OnAssemblyResolve));
+            typeResolveReal = CreateResolveEventHandler(nameof(OnTypeResolve));
+            resourceResolveReal = CreateResolveEventHandler(nameof(OnResourceResolve));
         }
 
         private Delegate CreateResolveEventHandler(string methodName)
@@ -118,6 +130,44 @@ namespace System
             {
                 assemblyResolve = (ResolveEventHandler)Delegate.Remove(assemblyResolve, value);
                 EventWrapper(assemblyResolve, assemblyResolveReal, assemblyResolveRemove);
+            }
+        }
+
+        private Assembly OnTypeResolve(ResolveEventArgs args)
+        {
+            return typeResolve?.Invoke(this, args);
+        }
+
+        public event ResolveEventHandler TypeResolve
+        {
+            add
+            {
+                EventWrapper(typeResolve, typeResolveReal, typeResolveAdd);
+                typeResolve = (ResolveEventHandler)Delegate.Combine(typeResolve, value);
+            }
+            remove
+            {
+                typeResolve = (ResolveEventHandler)Delegate.Remove(typeResolve, value);
+                EventWrapper(typeResolve, typeResolveReal, typeResolveRemove);
+            }
+        }
+
+        private Assembly OnResourceResolve(ResolveEventArgs args)
+        {
+            return resourceResolve?.Invoke(this, args);
+        }
+
+        public event ResolveEventHandler ResourceResolve
+        {
+            add
+            {
+                EventWrapper(resourceResolve, resourceResolveReal, resourceResolveAdd);
+                resourceResolve = (ResolveEventHandler)Delegate.Combine(resourceResolve, value);
+            }
+            remove
+            {
+                resourceResolve = (ResolveEventHandler)Delegate.Remove(resourceResolve, value);
+                EventWrapper(resourceResolve, resourceResolveReal, resourceResolveRemove);
             }
         }
     }
