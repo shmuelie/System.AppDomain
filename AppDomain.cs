@@ -19,6 +19,7 @@ namespace System
         private static readonly MethodInfo resourceResolveAdd;
         private static readonly MethodInfo resourceResolveRemove;
         private static readonly ConstructorInfo resolveEventArgsConstructor;
+        private static readonly Func<object, string> getBaseDirectory;
 
         static AppDomain()
         {
@@ -27,6 +28,8 @@ namespace System
             AddEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
             AddEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
             AddEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
+            ParameterExpression baseDirectoryParameter = Expression.Parameter(typeof(object), nameof(appDomain));
+            getBaseDirectory = Expression.Lambda<Func<object, string>>(Expression.Property(Expression.Convert(baseDirectoryParameter, RealType), RealType.GetProperty(nameof(BaseDirectory), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(baseDirectoryParameter, 1)).Compile();
         }
 
         private static void AddEventMethods(string eventName, out MethodInfo add, out MethodInfo remove)
@@ -68,6 +71,14 @@ namespace System
             assemblyResolveReal = CreateResolveEventHandler(nameof(OnAssemblyResolve));
             typeResolveReal = CreateResolveEventHandler(nameof(OnTypeResolve));
             resourceResolveReal = CreateResolveEventHandler(nameof(OnResourceResolve));
+        }
+
+        public string BaseDirectory
+        {
+            get
+            {
+                return getBaseDirectory(appDomain);
+            }
         }
 
         private Delegate CreateResolveEventHandler(string methodName)
