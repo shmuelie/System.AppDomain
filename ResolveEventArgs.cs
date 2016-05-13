@@ -28,13 +28,13 @@ namespace System
 
         static ResolveEventArgs()
         {
-            ParameterExpression nameParameter = Expression.Parameter(typeof(object), nameof(realEvent));
+            ParameterExpression nameParameter = Expression.Parameter(typeof(object), nameof(resolveEventArgs));
             getName = Expression.Lambda<Func<object, string>>(Expression.Property(Expression.Convert(nameParameter, RealType), RealType.GetProperty(nameof(Name), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(nameParameter, 1)).Compile();
-            ParameterExpression requestingAssemblyParameter = Expression.Parameter(typeof(object), nameof(realEvent));
+            ParameterExpression requestingAssemblyParameter = Expression.Parameter(typeof(object), nameof(resolveEventArgs));
             getRequestingAssembly = Expression.Lambda<Func<object, Assembly>>(Expression.Property(Expression.Convert(requestingAssemblyParameter, RealType), RealType.GetProperty(nameof(RequestingAssembly), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(requestingAssemblyParameter, 1)).Compile();
         }
 
-        private readonly object realEvent;
+        private readonly object resolveEventArgs;
 
         /// <summary>
         ///     Gets the name of the item to resolve.
@@ -49,7 +49,7 @@ namespace System
         {
             get
             {
-                return getName(realEvent);
+                return getName(resolveEventArgs);
             }
         }
 
@@ -69,22 +69,22 @@ namespace System
         {
             get
             {
-                return getRequestingAssembly(realEvent);
+                return getRequestingAssembly(resolveEventArgs);
             }
         }
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ResolveEventArgs"/> class from the internal version.
         /// </summary>
-        /// <param name="realEvent">The internal version.</param>
-        internal ResolveEventArgs(object realEvent)
+        /// <param name="resolveEventArgs">The internal version.</param>
+        internal ResolveEventArgs(object resolveEventArgs)
         {
-            realEvent.NotNull(nameof(realEvent));
-            if (!RealType.IsInstanceOfType(realEvent))
+            resolveEventArgs.NotNull(nameof(resolveEventArgs));
+            if (!RealType.IsInstanceOfType(resolveEventArgs))
             {
-                throw new ArgumentException($"'{nameof(realEvent)}' must be a real {typeof(ResolveEventArgs).FullName}", nameof(realEvent));
+                throw new ArgumentException($"'{nameof(resolveEventArgs)}' must be a real {typeof(ResolveEventArgs).FullName}", nameof(resolveEventArgs));
             }
-            this.realEvent = realEvent;
+            this.resolveEventArgs = resolveEventArgs;
         }
     }
 }
