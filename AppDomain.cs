@@ -65,7 +65,7 @@ namespace System
             appDomain.NotNull(nameof(appDomain));
             if (!RealType.IsInstanceOfType(appDomain))
             {
-                throw new ArgumentException($"'{nameof(appDomain)}' must be a real System.AppDomain", nameof(appDomain));
+                throw new ArgumentException($"'{nameof(appDomain)}' must be a real {typeof(AppDomain).FullName}", nameof(appDomain));
             }
             this.appDomain = appDomain;
             assemblyResolveReal = CreateResolveEventHandler(nameof(OnAssemblyResolve));

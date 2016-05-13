@@ -22,16 +22,16 @@ namespace System
     /// <seealso cref="AppDomain.AssemblyResolve"/>
     public class ResolveEventArgs : EventArgs
     {
-        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType("System.ResolveEventArgs");
+        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType(typeof(ResolveEventArgs).FullName);
         private static readonly Func<object, string> getName;
         private static readonly Func<object, Assembly> getRequestingAssembly;
 
         static ResolveEventArgs()
         {
-            ParameterExpression nameParameter = Expression.Parameter(typeof(object), "eventArgs");
-            getName = Expression.Lambda<Func<object, string>>(Expression.Property(Expression.Convert(nameParameter, RealType), RealType.GetProperty("Name", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(nameParameter, 1)).Compile();
-            ParameterExpression requestingAssemblyParameter = Expression.Parameter(typeof(object), "eventArgs");
-            getRequestingAssembly = Expression.Lambda<Func<object, Assembly>>(Expression.Property(Expression.Convert(requestingAssemblyParameter, RealType), RealType.GetProperty("RequestingAssembly", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(requestingAssemblyParameter, 1)).Compile();
+            ParameterExpression nameParameter = Expression.Parameter(typeof(object), nameof(realEvent));
+            getName = Expression.Lambda<Func<object, string>>(Expression.Property(Expression.Convert(nameParameter, RealType), RealType.GetProperty(nameof(Name), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(nameParameter, 1)).Compile();
+            ParameterExpression requestingAssemblyParameter = Expression.Parameter(typeof(object), nameof(realEvent));
+            getRequestingAssembly = Expression.Lambda<Func<object, Assembly>>(Expression.Property(Expression.Convert(requestingAssemblyParameter, RealType), RealType.GetProperty(nameof(RequestingAssembly), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(requestingAssemblyParameter, 1)).Compile();
         }
 
         private readonly object realEvent;
@@ -82,7 +82,7 @@ namespace System
             realEvent.NotNull(nameof(realEvent));
             if (!RealType.IsInstanceOfType(realEvent))
             {
-                throw new ArgumentException($"'{nameof(realEvent)}' must be a real System.ResolveEventArgs", nameof(realEvent));
+                throw new ArgumentException($"'{nameof(realEvent)}' must be a real {typeof(ResolveEventArgs).FullName}", nameof(realEvent));
             }
             this.realEvent = realEvent;
         }
