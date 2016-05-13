@@ -5,7 +5,7 @@ using System.Reflection;
 namespace System
 {
     /// <summary>
-    ///     Provides data for loader resolution events, such as the <see cref="AppDomain.TypeResolve"/>, <see cref="AppDomain.ResourceResolve"/>, <see cref="AppDomain.ReflectionOnlyAssemblyResolve"/>, and <see cref="AppDomain.AssemblyResolve"/> events.
+    ///     Provides data for loader resolution events, such as the <see cref="AppDomain.TypeResolve"/>, <see cref="AppDomain.ResourceResolve"/>, and <see cref="AppDomain.AssemblyResolve"/> events.
     /// </summary>
     /// <remarks>
     ///     <para>
@@ -19,7 +19,6 @@ namespace System
     /// <threadsafety static="true" instance="false"/>
     /// <seealso cref="AppDomain.TypeResolve"/>
     /// <seealso cref="AppDomain.ResourceResolve"/>
-    /// <seealso cref="AppDomain.ReflectionOnlyAssemblyResolve"/>
     /// <seealso cref="AppDomain.AssemblyResolve"/>
     public class ResolveEventArgs : EventArgs
     {
@@ -65,7 +64,6 @@ namespace System
         /// </remarks>
         /// <seealso cref="AppDomain.TypeResolve"/>
         /// <seealso cref="AppDomain.ResourceResolve"/>
-        /// <seealso cref="AppDomain.ReflectionOnlyAssemblyResolve"/>
         /// <seealso cref="AppDomain.AssemblyResolve"/>
         public Assembly RequestingAssembly
         {

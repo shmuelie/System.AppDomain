@@ -10,7 +10,7 @@ namespace System
     /// <returns>The assembly that resolves the type, assembly, or resource; or <see langword="null"/> if the assembly cannot be resolved.</returns>
     /// <remarks>If the runtime class loader cannot resolve a reference to an assembly, type, or resource, the corresponding events are raised to give the callback a chance to tell the runtime which assembly the referenced assembly, type, or resource is in. It is the responsibility of the ResolveEventHandler to return the assembly that resolves the type, assembly, or resource, or to return null if the assembly is not recognized.</remarks>
     /// <seealso cref="AppDomain.ResourceResolve"/>
-    /// <seealso cref="AppDomain.ReflectionOnlyAssemblyResolve"/>
     /// <seealso cref="AppDomain.AssemblyResolve"/>
+    /// <seealso cref="AppDomain.TypeResolve"/>
     public delegate Assembly ResolveEventHandler(object sender, ResolveEventArgs args);
 }
