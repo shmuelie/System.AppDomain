@@ -27,6 +27,23 @@
   },
   "frameworks":
   {
+    "dnxcore50":
+    {
+      "dependencies":
+      {
+        "System.Collections": "4.0.0.0",
+        "System.Collections.Concurrent": "4.0.0.0",
+        "System.ComponentModel": "4.0.0.0",
+        "System.Linq": "4.0.0.0",
+        "System.Reflection": "4.0.10.0",
+        "System.Runtime": "4.0.20.0",
+        "System.Runtime.InteropServices": "4.0.10.0",
+        "System.Threading": "4.0.0.0",
+        "System.Threading.Tasks": "4.0.0.0",
+        "System.Linq.Expressions": "4.0.0",
+        "System.Reflection.TypeExtensions": "4.0.1-beta-23409"
+      }
+    },
     "dotnet5.4":
     {
       "dependencies":
