@@ -45,7 +45,9 @@ namespace System
 
         private static AppDomain CreateCurrentDomain()
         {
-            return new AppDomain(RealType.GetProperty(nameof(CurrentDomain), BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public).GetValue(null));
+#pragma warning disable HeapAnalyzerImplicitParamsRule // Array allocation for params parameter
+            return new AppDomain(Expression.Lambda<Func<object>>(Expression.Property(null, RealType.GetProperty(nameof(CurrentDomain), BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public).GetMethod)).Compile()());
+#pragma warning restore HeapAnalyzerImplicitParamsRule // Array allocation for params parameter
         }
 
         /// <summary>
