@@ -1,5 +1,6 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "1.0.1-*",
+  "releaseNotes": "Fixed bug when calling AppDomain.CurrentDomain.",
   "description": "Exposes the hidden System.AppDomain in .NET Core",
   "authors":
   [
