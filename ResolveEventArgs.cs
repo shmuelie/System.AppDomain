@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace System
 {
@@ -28,10 +26,8 @@ namespace System
 
         static ResolveEventArgs()
         {
-            ParameterExpression nameParameter = Expression.Parameter(typeof(object), nameof(resolveEventArgs));
-            getName = Expression.Lambda<Func<object, string>>(Expression.Property(Expression.Convert(nameParameter, RealType), RealType.GetProperty(nameof(Name), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(nameParameter, 1)).Compile();
-            ParameterExpression requestingAssemblyParameter = Expression.Parameter(typeof(object), nameof(resolveEventArgs));
-            getRequestingAssembly = Expression.Lambda<Func<object, Assembly>>(Expression.Property(Expression.Convert(requestingAssemblyParameter, RealType), RealType.GetProperty(nameof(RequestingAssembly), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(requestingAssemblyParameter, 1)).Compile();
+            getName = RealType.GetInstancePropertyFunction<string>(nameof(Name));
+            getRequestingAssembly = RealType.GetInstancePropertyFunction<Assembly>(nameof(RequestingAssembly));
         }
 
         private readonly object resolveEventArgs;
@@ -80,10 +76,7 @@ namespace System
         internal ResolveEventArgs(object resolveEventArgs)
         {
             resolveEventArgs.NotNull(nameof(resolveEventArgs));
-            if (!RealType.IsInstanceOfType(resolveEventArgs))
-            {
-                throw new ArgumentException($"'{nameof(resolveEventArgs)}' must be a real {typeof(ResolveEventArgs).FullName}", nameof(resolveEventArgs));
-            }
+            resolveEventArgs.InstanceOf(nameof(resolveEventArgs), RealType);
             this.resolveEventArgs = resolveEventArgs;
         }
     }
