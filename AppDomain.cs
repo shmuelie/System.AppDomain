@@ -190,6 +190,12 @@ namespace System
             unhandledException?.Invoke(this, args);
         }
 
+        /// <summary>
+        ///     Occurs when an exception is not caught.
+        /// </summary>
+        /// <remarks>
+        ///     This event provides notification of uncaught exceptions. It allows the application to log information about the exception before the system default handler reports the exception to the user and terminates the application. If sufficient information about the state of the application is available, other actions may be undertaken — such as saving program data for later recovery. Caution is advised, because program data can become corrupted when exceptions are not handled.
+        /// </remarks>
         public event UnhandledExceptionEventHandler UnhandledException
         {
             add
