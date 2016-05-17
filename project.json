@@ -8,6 +8,15 @@
     "Shmueli Englard"
   ],
   "title": "System.AppDomain",
+  "dependencies":
+  {
+    "StyleCop.Analyzers":
+    {
+      "type": "build",
+      "version": "1.0.0",
+      "include": "analyzers"
+    }
+  },
   "frameworks":
   {
     "dnxcore50":
@@ -82,7 +91,16 @@
     [
       "CC0001",
       "RECS0145",
-      "RECS0129"
+      "RECS0129",
+      "SA1633",
+      "SA1200",
+      "SA1127",
+      "SA1311",
+      "SA1101",
+      "SA1600",
+      "SA1201",
+      "SA1214",
+      "SA1516"
     ]
   }
 }
