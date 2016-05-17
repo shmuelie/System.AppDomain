@@ -67,5 +67,10 @@ namespace System
             ParameterExpression parameter = Expression.Parameter(typeof(object), $"_{nameof(T)}");
             return Expression.Lambda<Func<object, T>>(Expression.Property(Expression.Convert(parameter, @this), @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).GetMethod), true, Enumerable.Repeat(parameter, 1)).Compile();
         }
+
+        public static Type RealType(this Type @this)
+        {
+            return typeof(string).GetTypeInfo().Assembly.GetType(@this.FullName);
+        }
     }
 }

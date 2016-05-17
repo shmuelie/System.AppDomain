@@ -11,8 +11,8 @@ namespace System
     /// <threadsafety static="true" instance="false"/>
     public sealed class AppDomain
     {
-        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType(typeof(AppDomain).FullName);
-        internal static readonly Type RealResolveEventHandler = typeof(string).GetTypeInfo().Assembly.GetType(typeof(ResolveEventHandler).FullName);
+        internal static readonly Type RealType = typeof(AppDomain).RealType();
+        internal static readonly Type RealResolveEventHandler = typeof(ResolveEventHandler).RealType();
         private static readonly Lazy<AppDomain> currentDomain;
         private static readonly MethodInfo assemblyResolveAdd;
         private static readonly MethodInfo assemblyResolveRemove;

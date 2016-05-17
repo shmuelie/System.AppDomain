@@ -20,7 +20,7 @@ namespace System
     /// <seealso cref="AppDomain.AssemblyResolve"/>
     public class ResolveEventArgs : EventArgs
     {
-        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType(typeof(ResolveEventArgs).FullName);
+        internal static readonly Type RealType = typeof(ResolveEventArgs).RealType();
         private static readonly Func<object, string> getName;
         private static readonly Func<object, Assembly> getRequestingAssembly;
 

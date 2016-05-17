@@ -4,7 +4,7 @@ namespace System
 {
     public class UnhandledExceptionEventArgs : EventArgs
     {
-        internal static readonly Type RealType = typeof(string).GetTypeInfo().Assembly.GetType(typeof(UnhandledExceptionEventArgs).FullName);
+        internal static readonly Type RealType = typeof(UnhandledExceptionEventArgs).RealType();
         private static readonly Func<object, object> getExceptionObject;
         private static readonly Func<object, bool> getIsTerminating;
 
