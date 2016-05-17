@@ -15,8 +15,8 @@ namespace System
 
         public static Delegate CreateEventDelegate<TEventArgs, TReturn>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
         {
-            ParameterExpression eParameter = Expression.Parameter(typeof(TEventArgs), "e");
-            ParameterExpression argsParameter = Expression.Parameter(realEventArgsType, "args");
+            ParameterExpression eParameter = Expression.Parameter(typeof(TEventArgs));
+            ParameterExpression argsParameter = Expression.Parameter(realEventArgsType);
             return Expression.Lambda(
                 realHandlerType,
                 Expression.Invoke(
@@ -41,8 +41,7 @@ namespace System
                 false,
                 (new ParameterExpression[] {
                     Expression.Parameter(
-                        typeof(object),
-                        "sender"
+                        typeof(object)
                     ),
                     argsParameter
                 }).AsEnumerable()
@@ -51,8 +50,8 @@ namespace System
 
         public static Delegate CreateEventDelegate<TEventArgs>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
         {
-            ParameterExpression eParameter = Expression.Parameter(typeof(TEventArgs), "e");
-            ParameterExpression argsParameter = Expression.Parameter(realEventArgsType, "args");
+            ParameterExpression eParameter = Expression.Parameter(typeof(TEventArgs));
+            ParameterExpression argsParameter = Expression.Parameter(realEventArgsType);
             return Expression.Lambda(
                 realHandlerType,
                 Expression.Invoke(
@@ -77,8 +76,7 @@ namespace System
                 false,
                 (new ParameterExpression[] {
                     Expression.Parameter(
-                        typeof(object),
-                        "sender"
+                        typeof(object)
                     ),
                     argsParameter
                 }).AsEnumerable()
@@ -100,7 +98,7 @@ namespace System
 
         public static Func<object, T> GetInstancePropertyFunction<T>(this Type @this, string propertyName)
         {
-            ParameterExpression parameter = Expression.Parameter(typeof(object), $"_{nameof(T)}");
+            ParameterExpression parameter = Expression.Parameter(typeof(object));
             return Expression.Lambda<Func<object, T>>(Expression.Property(Expression.Convert(parameter, @this), @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).GetMethod), true, Enumerable.Repeat(parameter, 1)).Compile();
         }
 
