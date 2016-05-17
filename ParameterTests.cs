@@ -8,7 +8,9 @@ namespace System
         {
             if (ReferenceEquals(@this, null))
             {
+#pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
                 throw new ArgumentNullException(paramName, ErrorStrings.CannotBeNull(paramName));
+#pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             }
         }
 
@@ -16,7 +18,9 @@ namespace System
         {
             if (string.IsNullOrEmpty(@this))
             {
+#pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
                 throw new ArgumentNullException(paramName, ErrorStrings.CannotBeNullOrEmpty(paramName));
+#pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             }
         }
 
@@ -24,7 +28,9 @@ namespace System
         {
             if (string.IsNullOrWhiteSpace(@this))
             {
+#pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
                 throw new ArgumentNullException(paramName, ErrorStrings.CannotBeNullOrWhitespace(paramName));
+#pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             }
         }
 
@@ -32,7 +38,9 @@ namespace System
         {
             if (!checkType.IsInstanceOfType(@this))
             {
+#pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
                 throw new ArgumentException($"'{paramName}' must be a real {checkType.FullName}", paramName);
+#pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             }
         }
     }

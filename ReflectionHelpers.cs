@@ -6,6 +6,8 @@ namespace System
 {
     internal static class ReflectionHelpers
     {
+        private static readonly Type[] singleObjectParameter = { typeof(object) };
+
         public static void GetEventMethods(this Type @this, string eventName, out MethodInfo addMethod, out MethodInfo removeMethod)
         {
             EventInfo eventInfo = @this.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -33,13 +35,15 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructor(new[] { typeof(object) }),
+                            eParameter.Type.GetConstructor(singleObjectParameter),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
                         1)),
                 false,
+#pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                 (new ParameterExpression[] {
+#pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                     Expression.Parameter(
                         typeof(object)
                     ),
@@ -68,13 +72,15 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructor(new[] { typeof(object) }),
+                            eParameter.Type.GetConstructor(singleObjectParameter),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
                         1)),
                 false,
+#pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                 (new ParameterExpression[] {
+#pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                     Expression.Parameter(
                         typeof(object)
                     ),
@@ -87,7 +93,9 @@ namespace System
         {
             if (@delegate == null || @delegate.GetInvocationList().Length == 0)
             {
+#pragma warning disable HeapAnalyzerImplicitNewArrayCreationRule // Implicit new array creation allocation
                 manipulationInfo.Invoke(@this, new[] { realDelegate });
+#pragma warning restore HeapAnalyzerImplicitNewArrayCreationRule // Implicit new array creation allocation
             }
         }
 

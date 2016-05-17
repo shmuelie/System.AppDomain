@@ -27,7 +27,9 @@ namespace System
 
         static AppDomain()
         {
+#pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
+#pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             RealType.GetEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
             RealType.GetEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
@@ -37,7 +39,9 @@ namespace System
 
         private static AppDomain CreateCurrentDomain()
         {
+#pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             return new AppDomain(RealType.GetStaticPropertyFunction(nameof(CurrentDomain))());
+#pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
         }
 
         /// <summary>
