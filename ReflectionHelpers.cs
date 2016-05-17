@@ -42,14 +42,12 @@ namespace System
                         1)),
                 false,
 #pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
-                (new ParameterExpression[] {
+                (new ParameterExpression[]
 #pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
-                    Expression.Parameter(
-                        typeof(object)
-                    ),
+                {
+                    Expression.Parameter(typeof(object)),
                     argsParameter
-                }).AsEnumerable()
-                ).Compile();
+                }).AsEnumerable()).Compile();
         }
 
         public static Delegate CreateEventDelegate<TEventArgs>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
@@ -79,14 +77,12 @@ namespace System
                         1)),
                 false,
 #pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
-                (new ParameterExpression[] {
+                (new ParameterExpression[]
 #pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
-                    Expression.Parameter(
-                        typeof(object)
-                    ),
+                {
+                    Expression.Parameter(typeof(object)),
                     argsParameter
-                }).AsEnumerable()
-                ).Compile();
+                }).AsEnumerable()).Compile();
         }
 
         public static void AttachOrDetachEvent(this object @this, MulticastDelegate @delegate, Delegate realDelegate, MethodInfo manipulationInfo)
