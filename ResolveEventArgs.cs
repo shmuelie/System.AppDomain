@@ -41,13 +41,7 @@ namespace System
         /// <remarks>
         ///     For the <see cref="AppDomain.AssemblyResolve"/> event, Name is the assembly name before policy is applied.
         /// </remarks>
-        public string Name
-        {
-            get
-            {
-                return getName(resolveEventArgs);
-            }
-        }
+        public string Name => getName(resolveEventArgs);
 
         /// <summary>
         ///     Gets the assembly whose dependency is being resolved.
@@ -61,13 +55,7 @@ namespace System
         /// <seealso cref="AppDomain.TypeResolve"/>
         /// <seealso cref="AppDomain.ResourceResolve"/>
         /// <seealso cref="AppDomain.AssemblyResolve"/>
-        public Assembly RequestingAssembly
-        {
-            get
-            {
-                return getRequestingAssembly(resolveEventArgs);
-            }
-        }
+        public Assembly RequestingAssembly => getRequestingAssembly(resolveEventArgs);
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ResolveEventArgs"/> class from the internal version.

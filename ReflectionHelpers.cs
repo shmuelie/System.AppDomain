@@ -99,10 +99,7 @@ namespace System
             }
         }
 
-        public static Func<object> GetStaticPropertyFunction(this Type @this, string propertyName)
-        {
-            return Expression.Lambda<Func<object>>(Expression.Property(null, @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).GetMethod), Enumerable.Repeat<ParameterExpression>(null, 0)).Compile();
-        }
+        public static Func<object> GetStaticPropertyFunction(this Type @this, string propertyName) => Expression.Lambda<Func<object>>(Expression.Property(null, @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).GetMethod), Enumerable.Repeat<ParameterExpression>(null, 0)).Compile();
 
         public static Func<object, T> GetInstancePropertyFunction<T>(this Type @this, string propertyName)
         {
@@ -110,9 +107,6 @@ namespace System
             return Expression.Lambda<Func<object, T>>(Expression.Property(Expression.Convert(parameter, @this), @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).GetMethod), true, Enumerable.Repeat(parameter, 1)).Compile();
         }
 
-        public static Type RealType(this Type @this)
-        {
-            return typeof(string).GetTypeInfo().Assembly.GetType(@this.FullName);
-        }
+        public static Type RealType(this Type @this) => typeof(string).GetTypeInfo().Assembly.GetType(@this.FullName);
     }
 }

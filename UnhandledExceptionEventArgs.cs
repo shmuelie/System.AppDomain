@@ -43,13 +43,7 @@ namespace System
         ///     </list>
         /// </remarks>
         /// <seealso cref="RuntimeCompatibilityAttribute"/>
-        public object ExceptionObject
-        {
-            get
-            {
-                return getExceptionObject(unhandledExceptionEventArgs);
-            }
-        }
+        public object ExceptionObject => getExceptionObject(unhandledExceptionEventArgs);
 
         /// <summary>
         ///     Indicates whether the common language runtime is terminating.
@@ -60,13 +54,7 @@ namespace System
         /// <remarks>
         ///     Beginning with the .NET Framework version 2.0, this property returns <see langword="true"/> for most unhandled exceptions, unless an application compatibility flag is used to revert to the behavior of versions 1.0 and 1.1. The reason is that most unhandled exceptions in threads, including thread pool threads, are allowed to proceed naturally, which normally results in termination of the application.
         /// </remarks>
-        public bool IsTerminating
-        {
-            get
-            {
-                return getIsTerminating(unhandledExceptionEventArgs);
-            }
-        }
+        public bool IsTerminating => getIsTerminating(unhandledExceptionEventArgs);
 
         internal UnhandledExceptionEventArgs(object unhandledExceptionEventArgs)
         {

@@ -37,12 +37,9 @@ namespace System
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
         }
 
-        private static AppDomain CreateCurrentDomain()
-        {
 #pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
-            return new AppDomain(RealType.GetStaticPropertyFunction(nameof(CurrentDomain))());
+        private static AppDomain CreateCurrentDomain() => new AppDomain(RealType.GetStaticPropertyFunction(nameof(CurrentDomain))());
 #pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
-        }
 
         /// <summary>
         ///     Gets the current application domain for the current application.
@@ -50,13 +47,7 @@ namespace System
         /// <value>
         ///     The current application domain.
         /// </value>
-        public static AppDomain CurrentDomain
-        {
-            get
-            {
-                return currentDomain.Value;
-            }
-        }
+        public static AppDomain CurrentDomain => currentDomain.Value;
 
         private readonly object appDomain;
         private readonly Delegate assemblyResolveReal;
@@ -85,18 +76,9 @@ namespace System
         /// <value>
         ///     The base directory that the assembly resolver uses to probe for assemblies.
         /// </value>
-        public string BaseDirectory
-        {
-            get
-            {
-                return getBaseDirectory(appDomain);
-            }
-        }
+        public string BaseDirectory => getBaseDirectory(appDomain);
 
-        private Assembly OnAssemblyResolve(ResolveEventArgs args)
-        {
-            return assemblyResolve?.Invoke(this, args);
-        }
+        private Assembly OnAssemblyResolve(ResolveEventArgs args) => assemblyResolve?.Invoke(this, args);
 
         /// <summary>
         ///     Occurs when the resolution of an assembly fails.
@@ -124,10 +106,7 @@ namespace System
             }
         }
 
-        private Assembly OnTypeResolve(ResolveEventArgs args)
-        {
-            return typeResolve?.Invoke(this, args);
-        }
+        private Assembly OnTypeResolve(ResolveEventArgs args) => typeResolve?.Invoke(this, args);
 
         /// <summary>
         ///     Occurs when the resolution of a type fails.
@@ -158,10 +137,7 @@ namespace System
             }
         }
 
-        private Assembly OnResourceResolve(ResolveEventArgs args)
-        {
-            return resourceResolve?.Invoke(this, args);
-        }
+        private Assembly OnResourceResolve(ResolveEventArgs args) => resourceResolve?.Invoke(this, args);
 
         /// <summary>
         ///     Occurs when the resolution of a resource fails because the resource is not a valid linked or embedded resource in the assembly.
@@ -189,10 +165,7 @@ namespace System
             }
         }
 
-        private void OnUnhandledException(UnhandledExceptionEventArgs args)
-        {
-            unhandledException?.Invoke(this, args);
-        }
+        private void OnUnhandledException(UnhandledExceptionEventArgs args) => unhandledException?.Invoke(this, args);
 
         /// <summary>
         ///     Occurs when an exception is not caught.
