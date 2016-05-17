@@ -1,48 +1,28 @@
 ﻿{
-  "version": "1.0.1-*",
-  "releaseNotes": "Fixed bug when calling AppDomain.CurrentDomain.",
-  "description": "Exposes the hidden System.AppDomain in .NET Core",
+  "version": "1.1.0-*",
+  "description": "Exposes the hidden System.AppDomain in .NET Core. Currently exposes AppDomain.CurrentDomain, AppDomain.BaseDirectory, AppDomain.AssemblyResolve, AppDomain.TypeResolve, AppDomain.ResourceResolve, and AppDomain.UnhandledException. Required supporting classes are also exposed.",
   "authors":
   [
     "Shmueli Englard"
   ],
-  "tags":
-  [
-    "AppDomain",
-    ".NET Core"
-  ],
-  "projectUrl": "https://github.com/SamuelEnglard/System.AppDomain",
-  "licenseUrl": "https://github.com/SamuelEnglard/System.AppDomain/blob/master/LICENSE",
-  "copyright": "Copyright 2016 Shmueli Englard",
-  "language": "en-us",
-  "owners":
-  [
-    "Shmueli Englard"
-  ],
-  "summary": "Exposes the hidden System.AppDomain in .NET Core",
   "title": "System.AppDomain",
-  "repository":
-  {
-    "type": "git",
-    "url": "https://github.com/SamuelEnglard/System.AppDomain.git"
-  },
   "frameworks":
   {
     "dnxcore50":
     {
       "dependencies":
       {
-        "System.Collections": "4.0.0.0",
-        "System.Collections.Concurrent": "4.0.0.0",
+        "System.Collections.Concurrent": "4.0.10",
         "System.ComponentModel": "4.0.0.0",
         "System.Linq": "4.0.0.0",
         "System.Reflection": "4.0.10.0",
         "System.Runtime": "4.0.20.0",
         "System.Runtime.InteropServices": "4.0.10.0",
-        "System.Threading": "4.0.0.0",
-        "System.Threading.Tasks": "4.0.0.0",
+        "System.Threading": "4.0.10.0",
+        "System.Threading.Tasks": "4.0.10.0",
         "System.Linq.Expressions": "4.0.0",
-        "System.Reflection.TypeExtensions": "4.0.1-beta-23409"
+        "System.Reflection.TypeExtensions": "4.0.1-beta-23409",
+        "System.Collections": "4.0.10"
       }
     },
     "dotnet5.4":
@@ -50,11 +30,47 @@
       "dependencies":
       {
         "Microsoft.CSharp": "4.0.1-beta-23516",
-        "System.Collections": "4.0.11-beta-23516",
         "System.Linq": "4.0.1-beta-23516",
         "System.Runtime": "4.0.21-beta-23516",
         "System.Threading": "4.0.11-beta-23516"
       }
+    },
+    "netstandard1.5":
+    {
+      "imports":
+      [
+        "dnxcore50"
+      ],
+      "dependencies":
+      {
+        "NETStandard.Library": "1.5.0-rc2-24027",
+        "System.Linq.Expressions": "4.0.11-rc2-24027",
+        "System.Reflection": "4.1.0-rc2-24027",
+        "System.Reflection.TypeExtensions": "4.1.0-rc2-24027"
+      }
     }
+  },
+  "packOptions":
+  {
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/SamuelEnglard/System.AppDomain.git"
+    },
+    "owners":
+    [
+      "Shmueli Englard"
+    ],
+    "summary": "Exposes the hidden System.AppDomain in .NET Core",
+    "tags":
+    [
+      "AppDomain",
+      ".NET Core"
+    ],
+    "projectUrl": "https://github.com/SamuelEnglard/System.AppDomain",
+    "licenseUrl": "https://github.com/SamuelEnglard/System.AppDomain/blob/master/LICENSE",
+    "copyright": "Copyright 2016 Shmueli Englard",
+    "language": "en-us",
+    "releaseNotes": "Added AppDomain.UnhandledException and made some internal changes to make code more reliable."
   }
 }
