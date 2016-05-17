@@ -17,5 +17,10 @@
         {
             return $"'{paramName}' cannot be empty, only whitespace, or {NULL}";
         }
+
+        public static string MustBeReal(string paramName, Type checkType)
+        {
+            return $"'{paramName}' must be a real {checkType.FullName}";
+        }
     }
 }

@@ -39,7 +39,7 @@ namespace System
             if (!checkType.IsInstanceOfType(@this))
             {
 #pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
-                throw new ArgumentException($"'{paramName}' must be a real {checkType.FullName}", paramName);
+                throw new ArgumentException(ErrorStrings.MustBeReal(paramName, checkType), paramName);
 #pragma warning restore HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
             }
         }
