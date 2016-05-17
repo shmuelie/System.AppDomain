@@ -13,6 +13,7 @@ namespace System
     {
         internal static readonly Type RealType = typeof(AppDomain).RealType();
         internal static readonly Type RealResolveEventHandler = typeof(ResolveEventHandler).RealType();
+        internal static readonly Type RealUnhandledExceptionEventHandler = typeof(UnhandledExceptionEventHandler).RealType();
         private static readonly Lazy<AppDomain> currentDomain;
         private static readonly MethodInfo assemblyResolveAdd;
         private static readonly MethodInfo assemblyResolveRemove;
@@ -20,6 +21,8 @@ namespace System
         private static readonly MethodInfo typeResolveRemove;
         private static readonly MethodInfo resourceResolveAdd;
         private static readonly MethodInfo resourceResolveRemove;
+        private static readonly MethodInfo unhandledExceptionAdd;
+        private static readonly MethodInfo unhandledExceptionRemove;
         private static readonly Func<object, string> getBaseDirectory;
 
         static AppDomain()
@@ -28,6 +31,7 @@ namespace System
             RealType.GetEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
             RealType.GetEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
+            RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
         }
 
@@ -57,6 +61,8 @@ namespace System
         private ResolveEventHandler typeResolve;
         private readonly Delegate resourceResolveReal;
         private ResolveEventHandler resourceResolve;
+        private readonly Delegate unhandledExceptionReal;
+        private UnhandledExceptionEventHandler unhandledException;
 
         internal AppDomain(object appDomain)
         {
@@ -66,6 +72,7 @@ namespace System
             assemblyResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnAssemblyResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
             typeResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnTypeResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
             resourceResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnResourceResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+            unhandledExceptionReal = this.CreateEventDelegate<UnhandledExceptionEventArgs>(nameof(OnUnhandledException), UnhandledExceptionEventArgs.RealType, RealUnhandledExceptionEventHandler);
         }
 
         /// <summary>
@@ -175,6 +182,25 @@ namespace System
             {
                 resourceResolve = (ResolveEventHandler)Delegate.Remove(resourceResolve, value);
                 appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveRemove);
+            }
+        }
+
+        private void OnUnhandledException(UnhandledExceptionEventArgs args)
+        {
+            unhandledException?.Invoke(this, args);
+        }
+
+        public event UnhandledExceptionEventHandler UnhandledException
+        {
+            add
+            {
+                appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionAdd);
+                unhandledException = (UnhandledExceptionEventHandler)Delegate.Combine(unhandledException, value);
+            }
+            remove
+            {
+                unhandledException = (UnhandledExceptionEventHandler)Delegate.Remove(unhandledException, value);
+                appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionRemove);
             }
         }
     }
