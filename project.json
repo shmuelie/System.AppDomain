@@ -73,7 +73,9 @@
     "xmlDoc": true,
     "nowarn":
     [
-      "CC0001"
+      "CC0001",
+      "RECS0145",
+      "RECS0129"
     ]
   }
 }
