@@ -2,6 +2,9 @@
 Seriously, using this library is usually a sign that something (\*cough\*dotnetcore\*cough\*) is wrong.
 
 # System.AppDomain
+[![NuGet](https://img.shields.io/nuget/v/System.AppDomain.svg)](https://www.nuget.org/packages/System.AppDomain/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+
 Exposes the hidden System.AppDomain in .NET Core
 
 ## Usage
