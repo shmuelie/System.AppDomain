@@ -1,7 +1,7 @@
 ﻿{
   "language": "en-US",
   "copyright": "Copyright 2016 Shmueli Englard",
-  "version": "1.1.0-*",
+  "version": "1.1.1-*",
   "description": "Exposes the hidden System.AppDomain in .NET Core. Currently exposes AppDomain.CurrentDomain, AppDomain.BaseDirectory, AppDomain.AssemblyResolve, AppDomain.TypeResolve, AppDomain.ResourceResolve, and AppDomain.UnhandledException. Required supporting classes are also exposed.",
   "authors":
   [
@@ -63,7 +63,7 @@
     "licenseUrl": "https://github.com/SamuelEnglard/System.AppDomain/blob/master/LICENSE",
     "copyright": "Copyright 2016 Shmueli Englard",
     "language": "en-us",
-    "releaseNotes": "Added AppDomain.UnhandledException and made some internal changes to make code more reliable."
+    "releaseNotes": "Mostly internal changes. Some documentation changes. Removed support for .NET Framework since this isn't needed there."
   },
   "buildOptions":
   {
