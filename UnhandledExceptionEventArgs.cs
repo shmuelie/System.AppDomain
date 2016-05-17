@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace System
 {
@@ -11,7 +10,7 @@ namespace System
     /// </remarks>
     /// <seealso cref="UnhandledExceptionEventHandler"/>
     /// <seealso cref="AppDomain.UnhandledException"/>
-    /// <seealso cref="System.EventArgs" />
+    /// <seealso cref="EventArgs" />
     /// <threadsafety static="true" instance="false"/>
     public class UnhandledExceptionEventArgs : EventArgs
     {
