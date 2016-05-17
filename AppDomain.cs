@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace System
 {
@@ -22,32 +20,20 @@ namespace System
         private static readonly MethodInfo typeResolveRemove;
         private static readonly MethodInfo resourceResolveAdd;
         private static readonly MethodInfo resourceResolveRemove;
-        private static readonly ConstructorInfo resolveEventArgsConstructor;
         private static readonly Func<object, string> getBaseDirectory;
 
         static AppDomain()
         {
-            resolveEventArgsConstructor = typeof(ResolveEventArgs).GetConstructor(new[] { typeof(object) });
             currentDomain = new Lazy<AppDomain>(CreateCurrentDomain);
-            AddEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
-            AddEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
-            AddEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
-            ParameterExpression baseDirectoryParameter = Expression.Parameter(typeof(object), nameof(appDomain));
-            getBaseDirectory = Expression.Lambda<Func<object, string>>(Expression.Property(Expression.Convert(baseDirectoryParameter, RealType), RealType.GetProperty(nameof(BaseDirectory), BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetMethod), true, Enumerable.Repeat(baseDirectoryParameter, 1)).Compile();
-        }
-
-        private static void AddEventMethods(string eventName, out MethodInfo add, out MethodInfo remove)
-        {
-            EventInfo eventInfo = RealType.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            add = eventInfo.AddMethod;
-            remove = eventInfo.RemoveMethod;
+            RealType.GetEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
+            RealType.GetEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
+            RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
+            getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
         }
 
         private static AppDomain CreateCurrentDomain()
         {
-#pragma warning disable HeapAnalyzerImplicitParamsRule // Array allocation for params parameter
-            return new AppDomain(Expression.Lambda<Func<object>>(Expression.Property(null, RealType.GetProperty(nameof(CurrentDomain), BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public).GetMethod)).Compile()());
-#pragma warning restore HeapAnalyzerImplicitParamsRule // Array allocation for params parameter
+            return new AppDomain(RealType.GetStaticPropertyFunction(nameof(CurrentDomain))());
         }
 
         /// <summary>
@@ -75,14 +61,11 @@ namespace System
         internal AppDomain(object appDomain)
         {
             appDomain.NotNull(nameof(appDomain));
-            if (!RealType.IsInstanceOfType(appDomain))
-            {
-                throw new ArgumentException($"'{nameof(appDomain)}' must be a real {typeof(AppDomain).FullName}", nameof(appDomain));
-            }
+            appDomain.InstanceOf(nameof(appDomain), RealType);
             this.appDomain = appDomain;
-            assemblyResolveReal = CreateResolveEventHandler(nameof(OnAssemblyResolve));
-            typeResolveReal = CreateResolveEventHandler(nameof(OnTypeResolve));
-            resourceResolveReal = CreateResolveEventHandler(nameof(OnResourceResolve));
+            assemblyResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnAssemblyResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+            typeResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnTypeResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+            resourceResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnResourceResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
         }
 
         /// <summary>
@@ -96,50 +79,6 @@ namespace System
             get
             {
                 return getBaseDirectory(appDomain);
-            }
-        }
-
-        private Delegate CreateResolveEventHandler(string methodName)
-        {
-            ParameterExpression eParameter = Expression.Parameter(typeof(ResolveEventArgs), "e");
-            ParameterExpression argsParameter = Expression.Parameter(ResolveEventArgs.RealType, "args");
-            return Expression.Lambda(
-                RealResolveEventHandler,
-                Expression.Invoke(
-                    Expression.Lambda<Func<ResolveEventArgs, Assembly>>(
-                        Expression.Call(
-                            Expression.Constant(
-                                this, typeof(AppDomain)),
-                            typeof(AppDomain).GetMethod(
-                                methodName,
-                                BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic),
-                            Enumerable.Repeat(eParameter, 1)),
-                        Enumerable.Repeat(
-                            eParameter,
-                            1)),
-                    Enumerable.Repeat(
-                        Expression.New(
-                            resolveEventArgsConstructor,
-                            Enumerable.Repeat(
-                                argsParameter,
-                                1)),
-                        1)),
-                false,
-                (new ParameterExpression[] {
-                    Expression.Parameter(
-                        typeof(object),
-                        "sender"
-                    ),
-                    argsParameter
-                }).AsEnumerable()
-                ).Compile();
-        }
-
-        private void EventWrapper(MulticastDelegate @delegate, Delegate realDelegate, MethodInfo manipulationInfo)
-        {
-            if (@delegate == null || @delegate.GetInvocationList().Length == 0)
-            {
-                manipulationInfo.Invoke(appDomain, new[] { realDelegate });
             }
         }
 
@@ -164,13 +103,13 @@ namespace System
         {
             add
             {
-                EventWrapper(assemblyResolve, assemblyResolveReal, assemblyResolveAdd);
+                appDomain.AttachOrDetachEvent(assemblyResolve, assemblyResolveReal, assemblyResolveAdd);
                 assemblyResolve = (ResolveEventHandler)Delegate.Combine(assemblyResolve, value);
             }
             remove
             {
                 assemblyResolve = (ResolveEventHandler)Delegate.Remove(assemblyResolve, value);
-                EventWrapper(assemblyResolve, assemblyResolveReal, assemblyResolveRemove);
+                appDomain.AttachOrDetachEvent(assemblyResolve, assemblyResolveReal, assemblyResolveRemove);
             }
         }
 
@@ -198,13 +137,13 @@ namespace System
         {
             add
             {
-                EventWrapper(typeResolve, typeResolveReal, typeResolveAdd);
+                appDomain.AttachOrDetachEvent(typeResolve, typeResolveReal, typeResolveAdd);
                 typeResolve = (ResolveEventHandler)Delegate.Combine(typeResolve, value);
             }
             remove
             {
                 typeResolve = (ResolveEventHandler)Delegate.Remove(typeResolve, value);
-                EventWrapper(typeResolve, typeResolveReal, typeResolveRemove);
+                appDomain.AttachOrDetachEvent(typeResolve, typeResolveReal, typeResolveRemove);
             }
         }
 
@@ -229,13 +168,13 @@ namespace System
         {
             add
             {
-                EventWrapper(resourceResolve, resourceResolveReal, resourceResolveAdd);
+                appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveAdd);
                 resourceResolve = (ResolveEventHandler)Delegate.Combine(resourceResolve, value);
             }
             remove
             {
                 resourceResolve = (ResolveEventHandler)Delegate.Remove(resourceResolve, value);
-                EventWrapper(resourceResolve, resourceResolveReal, resourceResolveRemove);
+                appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveRemove);
             }
         }
     }
