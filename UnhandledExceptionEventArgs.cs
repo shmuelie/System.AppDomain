@@ -45,7 +45,7 @@ namespace System
         public object ExceptionObject => getExceptionObject(unhandledExceptionEventArgs);
 
         /// <summary>
-        ///     Gets a value indicates whether the common language runtime is terminating.
+        ///     Gets a value indicating whether the common language runtime is terminating.
         /// </summary>
         /// <value>
         ///     <see langword="true"/> if the runtime is terminating; otherwise, <see langword="false"/>.
