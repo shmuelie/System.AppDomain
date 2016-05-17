@@ -49,6 +49,42 @@ namespace System
                 ).Compile();
         }
 
+        public static Delegate CreateEventDelegate<TEventArgs>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
+        {
+            ParameterExpression eParameter = Expression.Parameter(typeof(TEventArgs), "e");
+            ParameterExpression argsParameter = Expression.Parameter(realEventArgsType, "args");
+            return Expression.Lambda(
+                realHandlerType,
+                Expression.Invoke(
+                    Expression.Lambda<Action<TEventArgs>>(
+                        Expression.Call(
+                            Expression.Constant(
+                                @this, typeof(AppDomain)),
+                            typeof(AppDomain).GetMethod(
+                                onMethodName,
+                                BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic),
+                            Enumerable.Repeat(eParameter, 1)),
+                        Enumerable.Repeat(
+                            eParameter,
+                            1)),
+                    Enumerable.Repeat(
+                        Expression.New(
+                            eParameter.Type.GetConstructor(new[] { typeof(object) }),
+                            Enumerable.Repeat(
+                                argsParameter,
+                                1)),
+                        1)),
+                false,
+                (new ParameterExpression[] {
+                    Expression.Parameter(
+                        typeof(object),
+                        "sender"
+                    ),
+                    argsParameter
+                }).AsEnumerable()
+                ).Compile();
+        }
+
         public static void AttachOrDetachEvent(this object @this, MulticastDelegate @delegate, Delegate realDelegate, MethodInfo manipulationInfo)
         {
             if (@delegate == null || @delegate.GetInvocationList().Length == 0)
