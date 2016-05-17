@@ -50,20 +50,16 @@
       }
     }
   },
-  "packOptions":
-  {
-    "repository":
-    {
+  "packOptions": {
+    "repository": {
       "type": "git",
       "url": "https://github.com/SamuelEnglard/System.AppDomain.git"
     },
-    "owners":
-    [
+    "owners": [
       "Shmueli Englard"
     ],
     "summary": "Exposes the hidden System.AppDomain in .NET Core",
-    "tags":
-    [
+    "tags": [
       "AppDomain",
       ".NET Core"
     ],
@@ -72,5 +68,12 @@
     "copyright": "Copyright 2016 Shmueli Englard",
     "language": "en-us",
     "releaseNotes": "Added AppDomain.UnhandledException and made some internal changes to make code more reliable."
+  },
+  "buildOptions": {
+    "xmlDoc": true,
+    "nowarn":
+    [
+      "CC0001"
+    ]
   }
 }
