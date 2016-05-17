@@ -57,10 +57,6 @@ namespace System
         /// <seealso cref="AppDomain.AssemblyResolve"/>
         public Assembly RequestingAssembly => getRequestingAssembly(resolveEventArgs);
 
-        /// <summary>
-        ///     Creates a new instance of the <see cref="ResolveEventArgs"/> class from the internal version.
-        /// </summary>
-        /// <param name="resolveEventArgs">The internal version.</param>
         internal ResolveEventArgs(object resolveEventArgs)
         {
             resolveEventArgs.NotNull(nameof(resolveEventArgs));
