@@ -14,3 +14,8 @@ Most members that are not here are not in the .NET Core `AppDomain` so I cannot 
 
 ## Implementation
 Internally **A LOT** of reflection is going on, making use of types in `System.Reflection` and `System.Linq.Expressions`.
+
+## Related Issues
+[![GitHub Issue](https://img.shields.io/badge/corefx-6398-yellow.svg)](https://github.com/dotnet/corefx/issues/6398)
+
+Created By: [![Twitter Follow](https://img.shields.io/twitter/follow/shmuelie.svg?style=social&label=Shmuelie)](https://www.twitter.com/shmuelie)
