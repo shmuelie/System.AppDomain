@@ -21,4 +21,7 @@
       <UserProperties __JSONSchema="http://json.schemastore.org/project-1.0.0-rc2" />
     </VisualStudio>
   </ProjectExtensions>
+  <Target AfterTargets="CoreCompile" Condition="'$(Configuration)' == 'Release'" Name="Pack">
+    <Dnx RuntimeExe="$(SDKToolingExe)" ProjectFolder="$(MSBuildProjectDirectory)" Arguments="pack --output $(OutputPath)$(Configuration) --configuration $(Configuration)" />
+  </Target>
 </Project>
