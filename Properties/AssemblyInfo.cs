@@ -5,14 +5,20 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("System.AppDomain")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyTitle("Exposes the hidden System.AppDomain in .NET Core")]
+[assembly: AssemblyDescription("Exposes the hidden System.AppDomain in .NET Core. Currently exposes AppDomain.CurrentDomain, AppDomain.BaseDirectory, AppDomain.AssemblyResolve, AppDomain.TypeResolve, AppDomain.ResourceResolve, and AppDomain.UnhandledException. Required supporting classes are also exposed.")]
+[assembly: AssemblyConfiguration(
+#if DEBUG
+    "Debug"
+#elif RELEASE
+    "Release"
+#endif
+    )]
+[assembly: AssemblyCompany("Shmueli Englard")]
 [assembly: AssemblyProduct("System.AppDomain")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © 2016 Shmueli Englard")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyCulture("en-US")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
