@@ -12,6 +12,8 @@ While not every member is here, every member that is exposed via the API surface
 
 Most members that are not here are not in the .NET Core `AppDomain` so I cannot expose them.
 
+When a member in `AppDomain` exposed here has a proper replacement in .NET Core I will mark that member as obsolete with a message to what should be used instead.
+
 ## Implementation
 Internally **A LOT** of reflection is going on, making use of types in `System.Reflection` and `System.Linq.Expressions`.
 
