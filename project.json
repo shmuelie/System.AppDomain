@@ -37,7 +37,6 @@
         "System.Linq.Expressions": "4.0.11-rc2-24027",
         "System.Reflection": "4.1.0-rc2-24027",
         "System.Reflection.TypeExtensions": "4.1.0-rc2-24027",
-        "System.Linq": "4.1.0-rc2-24027",
         "System.Runtime.InteropServices": "4.1.0-rc2-24027",
         "System.Resources.ResourceManager": "4.0.1-rc2-24027"
       }
