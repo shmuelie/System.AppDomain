@@ -66,6 +66,20 @@
     "language": "en-us",
     "releaseNotes": "Mostly internal changes. Some documentation changes. Removed support for .NET Framework since this isn't needed there."
   },
+  "configurations":
+  {
+    "ReleaseSign":
+    {
+      "buildOptions":
+      {
+        "define":
+        [
+          "RELEASE"
+        ],
+        "keyFile": "System.AppDomain.snk"
+      }
+    }
+  },
   "buildOptions":
   {
     "xmlDoc": true,
