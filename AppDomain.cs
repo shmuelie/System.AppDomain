@@ -33,7 +33,9 @@ namespace System
             RealType.GetEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
             RealType.GetEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
+#if DNX
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
+#endif
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
         }
 
@@ -67,7 +69,9 @@ namespace System
             assemblyResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnAssemblyResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
             typeResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnTypeResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
             resourceResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnResourceResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+#if DNX
             unhandledExceptionReal = this.CreateEventDelegate<UnhandledExceptionEventArgs>(nameof(OnUnhandledException), UnhandledExceptionEventArgs.RealType, RealUnhandledExceptionEventHandler);
+#endif
         }
 
         /// <summary>
@@ -177,13 +181,17 @@ namespace System
         {
             add
             {
+#if DNX
                 appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionAdd);
                 unhandledException = (UnhandledExceptionEventHandler)Delegate.Combine(unhandledException, value);
+#endif
             }
             remove
             {
+#if DNX
                 unhandledException = (UnhandledExceptionEventHandler)Delegate.Remove(unhandledException, value);
                 appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionRemove);
+#endif
             }
         }
     }
