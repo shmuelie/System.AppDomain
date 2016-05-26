@@ -20,8 +20,8 @@ namespace System
 
         static UnhandledExceptionEventArgs()
         {
-            getExceptionObject = RealType.GetInstancePropertyFunction<object>(nameof(ExceptionObject));
-            getIsTerminating = RealType.GetInstancePropertyFunction<bool>(nameof(IsTerminating));
+            getExceptionObject = RealType.GetInstancePropertyFunction<object>(nameof(ExceptionObject)) ?? RealType.GetInstanceFieldFunction<object>($"_{nameof(ExceptionObject)}");
+            getIsTerminating = RealType.GetInstancePropertyFunction<bool>(nameof(IsTerminating)) ?? RealType.GetInstanceFieldFunction<bool>($"_{nameof(IsTerminating)}");
         }
 
         private readonly object unhandledExceptionEventArgs;

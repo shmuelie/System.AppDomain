@@ -11,6 +11,12 @@ namespace System
         public static void GetEventMethods(this Type @this, string eventName, out MethodInfo addMethod, out MethodInfo removeMethod)
         {
             EventInfo eventInfo = @this.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (eventInfo == null)
+            {
+                addMethod = null;
+                removeMethod = null;
+                return;
+            }
             addMethod = eventInfo.AddMethod;
             removeMethod = eventInfo.RemoveMethod;
         }
@@ -99,8 +105,19 @@ namespace System
 
         public static Func<object, T> GetInstancePropertyFunction<T>(this Type @this, string propertyName)
         {
+            PropertyInfo propertyInfo = @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (propertyInfo == null)
+            {
+                return null;
+            }
             ParameterExpression parameter = Expression.Parameter(typeof(object));
-            return Expression.Lambda<Func<object, T>>(Expression.Property(Expression.Convert(parameter, @this), @this.GetProperty(propertyName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).GetMethod), true, Enumerable.Repeat(parameter, 1)).Compile();
+            return Expression.Lambda<Func<object, T>>(Expression.Property(Expression.Convert(parameter, @this), propertyInfo.GetMethod), true, Enumerable.Repeat(parameter, 1)).Compile();
+        }
+
+        public static Func<object, T> GetInstanceFieldFunction<T>(this Type @this, string fieldName)
+        {
+            ParameterExpression parameter = Expression.Parameter(typeof(object));
+            return Expression.Lambda<Func<object, T>>(Expression.Field(Expression.Convert(parameter, @this), @this.GetField(fieldName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)), true, Enumerable.Repeat(parameter, 1)).Compile();
         }
 
         public static Type RealType(this Type @this) => typeof(string).GetTypeInfo().Assembly.GetType(@this.FullName);

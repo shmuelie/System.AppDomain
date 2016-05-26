@@ -1,7 +1,7 @@
 ﻿{
   "language": "neutral",
   "copyright": "Copyright © 2016 Shmueli Englard",
-  "version": "2.0.2-*",
+  "version": "2.0.3-*",
   "description": "Exposes the hidden System.AppDomain in .NET Core. Currently exposes AppDomain.CurrentDomain, AppDomain.BaseDirectory, AppDomain.AssemblyResolve, AppDomain.TypeResolve, AppDomain.ResourceResolve, and AppDomain.UnhandledException. Required supporting classes are also exposed.",
   "authors":
   [
@@ -28,8 +28,7 @@
         "System.Runtime.InteropServices": "4.0.10.0",
         "System.Linq.Expressions": "4.0.0",
         "System.Reflection.TypeExtensions": "4.0.1-beta-23409"
-      },
-      "buildOptions": {"define": ["DNX"]}
+      }
     },
     "netstandard1.5":
     {
@@ -65,7 +64,7 @@
     "licenseUrl": "https://github.com/SamuelEnglard/System.AppDomain/blob/master/LICENSE",
     "copyright": "Copyright © 2016 Shmueli Englard",
     "language": "en-us",
-    "releaseNotes": "Apparently they removed UnhandledException in RC2. So now on RC2 that event is still 'exposed' but will never fire."
+    "releaseNotes": "Apparently they made a lot of changes in RC2. So I'm going to make sure this code is more future proof."
   },
   "buildOptions":
   {

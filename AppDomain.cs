@@ -33,9 +33,7 @@ namespace System
             RealType.GetEventMethods(nameof(AssemblyResolve), out assemblyResolveAdd, out assemblyResolveRemove);
             RealType.GetEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
-#if DNX
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
-#endif
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
         }
 
@@ -66,12 +64,22 @@ namespace System
             appDomain.NotNull(nameof(appDomain));
             appDomain.InstanceOf(nameof(appDomain), RealType);
             this.appDomain = appDomain;
-            assemblyResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnAssemblyResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
-            typeResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnTypeResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
-            resourceResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnResourceResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
-#if DNX
-            unhandledExceptionReal = this.CreateEventDelegate<UnhandledExceptionEventArgs>(nameof(OnUnhandledException), UnhandledExceptionEventArgs.RealType, RealUnhandledExceptionEventHandler);
-#endif
+            if (assemblyResolveAdd != null)
+            {
+                assemblyResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnAssemblyResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+            }
+            if (typeResolveAdd != null)
+            {
+                typeResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnTypeResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+            }
+            if (resourceResolveAdd != null)
+            {
+                resourceResolveReal = this.CreateEventDelegate<ResolveEventArgs, Assembly>(nameof(OnResourceResolve), ResolveEventArgs.RealType, RealResolveEventHandler);
+            }
+            if (unhandledExceptionAdd != null)
+            {
+                unhandledExceptionReal = this.CreateEventDelegate<UnhandledExceptionEventArgs>(nameof(OnUnhandledException), UnhandledExceptionEventArgs.RealType, RealUnhandledExceptionEventHandler);
+            }
         }
 
         /// <summary>
@@ -100,13 +108,19 @@ namespace System
         {
             add
             {
-                appDomain.AttachOrDetachEvent(assemblyResolve, assemblyResolveReal, assemblyResolveAdd);
-                assemblyResolve = (ResolveEventHandler)Delegate.Combine(assemblyResolve, value);
+                if (assemblyResolveAdd != null)
+                {
+                    appDomain.AttachOrDetachEvent(assemblyResolve, assemblyResolveReal, assemblyResolveAdd);
+                    assemblyResolve = (ResolveEventHandler)Delegate.Combine(assemblyResolve, value);
+                }
             }
             remove
             {
-                assemblyResolve = (ResolveEventHandler)Delegate.Remove(assemblyResolve, value);
-                appDomain.AttachOrDetachEvent(assemblyResolve, assemblyResolveReal, assemblyResolveRemove);
+                if (assemblyResolveAdd != null)
+                {
+                    assemblyResolve = (ResolveEventHandler)Delegate.Remove(assemblyResolve, value);
+                    appDomain.AttachOrDetachEvent(assemblyResolve, assemblyResolveReal, assemblyResolveRemove);
+                }
             }
         }
 
@@ -131,13 +145,19 @@ namespace System
         {
             add
             {
-                appDomain.AttachOrDetachEvent(typeResolve, typeResolveReal, typeResolveAdd);
-                typeResolve = (ResolveEventHandler)Delegate.Combine(typeResolve, value);
+                if (typeResolveAdd != null)
+                {
+                    appDomain.AttachOrDetachEvent(typeResolve, typeResolveReal, typeResolveAdd);
+                    typeResolve = (ResolveEventHandler)Delegate.Combine(typeResolve, value);
+                }
             }
             remove
             {
-                typeResolve = (ResolveEventHandler)Delegate.Remove(typeResolve, value);
-                appDomain.AttachOrDetachEvent(typeResolve, typeResolveReal, typeResolveRemove);
+                if (typeResolveAdd != null)
+                {
+                    typeResolve = (ResolveEventHandler)Delegate.Remove(typeResolve, value);
+                    appDomain.AttachOrDetachEvent(typeResolve, typeResolveReal, typeResolveRemove);
+                }
             }
         }
 
@@ -159,13 +179,19 @@ namespace System
         {
             add
             {
-                appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveAdd);
-                resourceResolve = (ResolveEventHandler)Delegate.Combine(resourceResolve, value);
+                if (resourceResolveAdd != null)
+                {
+                    appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveAdd);
+                    resourceResolve = (ResolveEventHandler)Delegate.Combine(resourceResolve, value);
+                }
             }
             remove
             {
-                resourceResolve = (ResolveEventHandler)Delegate.Remove(resourceResolve, value);
-                appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveRemove);
+                if (resourceResolveAdd != null)
+                {
+                    resourceResolve = (ResolveEventHandler)Delegate.Remove(resourceResolve, value);
+                    appDomain.AttachOrDetachEvent(resourceResolve, resourceResolveReal, resourceResolveRemove);
+                }
             }
         }
 
@@ -181,17 +207,19 @@ namespace System
         {
             add
             {
-#if DNX
-                appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionAdd);
-                unhandledException = (UnhandledExceptionEventHandler)Delegate.Combine(unhandledException, value);
-#endif
+                if (unhandledExceptionAdd != null)
+                {
+                    appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionAdd);
+                    unhandledException = (UnhandledExceptionEventHandler)Delegate.Combine(unhandledException, value);
+                }
             }
             remove
             {
-#if DNX
-                unhandledException = (UnhandledExceptionEventHandler)Delegate.Remove(unhandledException, value);
-                appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionRemove);
-#endif
+                if (unhandledExceptionAdd != null)
+                {
+                    unhandledException = (UnhandledExceptionEventHandler)Delegate.Remove(unhandledException, value);
+                    appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionRemove);
+                }
             }
         }
     }

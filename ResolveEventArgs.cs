@@ -26,8 +26,8 @@ namespace System
 
         static ResolveEventArgs()
         {
-            getName = RealType.GetInstancePropertyFunction<string>(nameof(Name));
-            getRequestingAssembly = RealType.GetInstancePropertyFunction<Assembly>(nameof(RequestingAssembly));
+            getName = RealType.GetInstancePropertyFunction<string>(nameof(Name)) ?? RealType.GetInstanceFieldFunction<string>($"_{nameof(Name)}");
+            getRequestingAssembly = RealType.GetInstancePropertyFunction<Assembly>(nameof(RequestingAssembly)) ?? RealType.GetInstanceFieldFunction<Assembly>($"_{nameof(RequestingAssembly)}");
         }
 
         private readonly object resolveEventArgs;
