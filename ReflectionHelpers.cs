@@ -6,8 +6,6 @@ namespace System
 {
     internal static class ReflectionHelpers
     {
-        private static readonly Type[] singleObjectParameter = { typeof(object) };
-
         public static void GetEventMethods(this Type @this, string eventName, out MethodInfo addMethod, out MethodInfo removeMethod)
         {
             EventInfo eventInfo = @this.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -41,7 +39,7 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructor(singleObjectParameter),
+                            eParameter.Type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First(),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
@@ -76,7 +74,7 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructor(singleObjectParameter),
+                            eParameter.Type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First(),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
