@@ -1,6 +1,8 @@
 # DO NOT USE UNLESS YOU HAVE NO OTHER CHOICE! THINK ABOUT IT!
 Seriously, using this library is usually a sign that something (\*cough\*dotnetcore\*cough\*) is wrong.
 
+Note: `AppDomain` is coming back! https://twitter.com/terrajobst/statuses/735505653846806528
+
 # System.AppDomain
 [![NuGet](https://img.shields.io/nuget/v/System.AppDomain.svg)](https://www.nuget.org/packages/System.AppDomain/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
