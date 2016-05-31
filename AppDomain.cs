@@ -24,6 +24,7 @@ namespace System
         private static readonly MethodInfo unhandledExceptionAdd;
         private static readonly MethodInfo unhandledExceptionRemove;
         private static readonly Func<object, string> getBaseDirectory;
+        private static readonly Func<object, Assembly[]> getAssembliesFunc;
 
         static AppDomain()
         {
@@ -35,6 +36,7 @@ namespace System
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
+            getAssembliesFunc = RealType.GetInstanceFunctionFunction<Assembly[]>(nameof(GetAssemblies));
         }
 
 #pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
@@ -89,6 +91,12 @@ namespace System
         ///     The base directory that the assembly resolver uses to probe for assemblies.
         /// </value>
         public string BaseDirectory => getBaseDirectory(appDomain);
+
+        /// <summary>
+        ///     Gets the assemblies that have been loaded into the execution context of this application domain.
+        /// </summary>
+        /// <returns>An array of assemblies in this application domain.</returns>
+        public Assembly[] GetAssemblies() => getAssembliesFunc(appDomain);
 
         private Assembly OnAssemblyResolve(ResolveEventArgs args) => assemblyResolve?.Invoke(this, args);
 
