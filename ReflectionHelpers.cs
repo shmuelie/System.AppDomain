@@ -121,7 +121,12 @@ namespace System
         public static Func<object, T> GetInstanceFunctionFunction<T>(this Type @this, string functionName)
         {
             ParameterExpression parameter = Expression.Parameter(typeof(object));
-            return Expression.Lambda<Func<object, T>>(Expression.Call(Expression.Convert(parameter, @this), @this.GetMethod(functionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)), true, Enumerable.Repeat(parameter, 1)).Compile();
+            MethodInfo methodInfo = @this.GetMethod(functionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (methodInfo == null)
+            {
+                return null;
+            }
+            return Expression.Lambda<Func<object, T>>(Expression.Call(Expression.Convert(parameter, @this), methodInfo), true, Enumerable.Repeat(parameter, 1)).Compile();
         }
 
         public static Func<object, TArg, TResult> GetInstanceFunctionFunction<TArg, TResult>(this Type @this, string functionName)
