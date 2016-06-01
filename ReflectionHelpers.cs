@@ -124,6 +124,31 @@ namespace System
             return Expression.Lambda<Func<object, T>>(Expression.Call(Expression.Convert(parameter, @this), @this.GetMethod(functionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)), true, Enumerable.Repeat(parameter, 1)).Compile();
         }
 
+        public static Func<object, TArg, TResult> GetInstanceFunctionFunction<TArg, TResult>(this Type @this, string functionName)
+        {
+            ParameterExpression thisParameter = Expression.Parameter(typeof(object));
+            ParameterExpression argParameter = Expression.Parameter(typeof(TArg));
+            MethodInfo[] methodInfos = @this.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo methodInfo = null;
+            for(int i = 0; i < methodInfos.Length; i++, methodInfo = null)
+            {
+                methodInfo = methodInfos[i];
+                if (methodInfo.Name == functionName)
+                {
+                    ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                    if (parameterInfos.Length == 1 && parameterInfos[0].ParameterType.FullName == typeof(TArg).FullName)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (methodInfo == null)
+            {
+                return null;
+            }
+            return Expression.Lambda<Func<object, TArg, TResult>>(Expression.Call(Expression.Convert(thisParameter, @this), methodInfo, Enumerable.Repeat(argParameter, 1)), true, new[] { thisParameter, argParameter }).Compile();
+        }
+
         public static Type RealType(this Type @this) => typeof(string).GetTypeInfo().Assembly.GetType(@this.FullName);
     }
 }
