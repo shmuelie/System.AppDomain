@@ -105,13 +105,13 @@ namespace System
         /// <remarks>
         ///     The friendly name of the default application domain is the file name of the process executable. For example, if the executable used to start the process is "c:\MyAppDirectory\MyAssembly.exe", the friendly name of the default application domain is "MyAssembly.exe".
         /// </remarks>
-        public string FriendlyName => getFriendlyName(appDomain);
+        public string FriendlyName => getFriendlyName?.Invoke(appDomain) ?? string.Empty;
 
         /// <summary>
         ///     Gets the assemblies that have been loaded into the execution context of this application domain.
         /// </summary>
         /// <returns>An array of assemblies in this application domain.</returns>
-        public Assembly[] GetAssemblies() => getAssembliesFunc(appDomain);
+        public Assembly[] GetAssemblies() => getAssembliesFunc?.Invoke(appDomain) ?? new Assembly[0];
 
         /// <summary>
         ///     Gets the value stored in the current application domain for the specified name.
@@ -122,7 +122,7 @@ namespace System
         public object GetData(string name)
         {
             name.NotNull(nameof(name));
-            return getGetDataFunc(appDomain, name);
+            return getGetDataFunc?.Invoke(appDomain, name);
         }
 
         private Assembly OnAssemblyResolve(ResolveEventArgs args) => assemblyResolve?.Invoke(this, args);
