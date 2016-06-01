@@ -24,6 +24,7 @@ namespace System
         private static readonly MethodInfo unhandledExceptionAdd;
         private static readonly MethodInfo unhandledExceptionRemove;
         private static readonly Func<object, string> getBaseDirectory;
+        private static readonly Func<object, string> getFriendlyName;
         private static readonly Func<object, Assembly[]> getAssembliesFunc;
         private static readonly Func<object, string, object> getGetDataFunc;
 
@@ -37,6 +38,7 @@ namespace System
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
+            getFriendlyName = RealType.GetInstancePropertyFunction<string>(nameof(FriendlyName));
             getAssembliesFunc = RealType.GetInstanceFunctionFunction<Assembly[]>(nameof(GetAssemblies));
             getGetDataFunc = RealType.GetInstanceFunctionFunction<string, object>(nameof(GetData));
         }
@@ -93,6 +95,17 @@ namespace System
         ///     The base directory that the assembly resolver uses to probe for assemblies.
         /// </value>
         public string BaseDirectory => getBaseDirectory(appDomain);
+
+        /// <summary>
+        ///     Gets the friendly name of this application domain.
+        /// </summary>
+        /// <value>
+        ///     The friendly name of this application domain.
+        /// </value>
+        /// <remarks>
+        ///     The friendly name of the default application domain is the file name of the process executable. For example, if the executable used to start the process is "c:\MyAppDirectory\MyAssembly.exe", the friendly name of the default application domain is "MyAssembly.exe".
+        /// </remarks>
+        public string FriendlyName => getFriendlyName(appDomain);
 
         /// <summary>
         ///     Gets the assemblies that have been loaded into the execution context of this application domain.
