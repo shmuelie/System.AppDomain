@@ -25,6 +25,7 @@ namespace System
         private static readonly MethodInfo unhandledExceptionRemove;
         private static readonly Func<object, string> getBaseDirectory;
         private static readonly Func<object, Assembly[]> getAssembliesFunc;
+        private static readonly Func<object, string, object> getGetDataFunc;
 
         static AppDomain()
         {
@@ -37,6 +38,7 @@ namespace System
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
             getAssembliesFunc = RealType.GetInstanceFunctionFunction<Assembly[]>(nameof(GetAssemblies));
+            getGetDataFunc = RealType.GetInstanceFunctionFunction<string, object>(nameof(GetData));
         }
 
 #pragma warning disable HeapAnalyzerExplicitNewObjectRule // Explicit new reference type allocation
@@ -97,6 +99,18 @@ namespace System
         /// </summary>
         /// <returns>An array of assemblies in this application domain.</returns>
         public Assembly[] GetAssemblies() => getAssembliesFunc(appDomain);
+
+        /// <summary>
+        ///     Gets the value stored in the current application domain for the specified name.
+        /// </summary>
+        /// <param name="name">The name of a predefined application domain property, or the name of an application domain property you have defined.</param>
+        /// <returns>The value of the <paramref name="name"/> property, or <see langword="null"/> if the property does not exist.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>
+        public object GetData(string name)
+        {
+            name.NotNull(nameof(name));
+            return getGetDataFunc(appDomain, name);
+        }
 
         private Assembly OnAssemblyResolve(ResolveEventArgs args) => assemblyResolve?.Invoke(this, args);
 
