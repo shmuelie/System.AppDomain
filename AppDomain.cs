@@ -26,6 +26,7 @@ namespace System
         private static readonly Func<object, string> getBaseDirectory;
         private static readonly Func<object, string> getFriendlyName;
         private static readonly Func<object, bool> getIsHomogenous;
+        private static readonly Func<object, bool> getIsFullyTrusted;
         private static readonly Func<object, Assembly[]> getAssembliesFunc;
         private static readonly Func<object, string, object> getGetDataFunc;
 
@@ -41,6 +42,7 @@ namespace System
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
             getFriendlyName = RealType.GetInstancePropertyFunction<string>(nameof(FriendlyName));
             getIsHomogenous = RealType.GetInstancePropertyFunction<bool>(nameof(IsHomogenous));
+            getIsFullyTrusted = RealType.GetInstancePropertyFunction<bool>(nameof(IsFullyTrusted));
             getAssembliesFunc = RealType.GetInstanceFunctionFunction<Assembly[]>(nameof(GetAssemblies));
             getGetDataFunc = RealType.GetInstanceFunctionFunction<string, object>(nameof(GetData));
         }
@@ -116,6 +118,14 @@ namespace System
         ///     <see langword="true"/> if the current application domain has a homogenous set of permissions; otherwise, <see langword="false"/>.
         /// </value>
         public bool IsHomogenous => getIsHomogenous?.Invoke(appDomain) ?? false;
+
+        /// <summary>
+        ///     Gets a value that indicates whether assemblies that are loaded into the current application domain execute with full trust.
+        /// </summary>
+        /// <value>
+        ///     <see langword="true"/> if assemblies that are loaded into the current application domain execute with full trust; otherwise, <see langword="false"/>.
+        /// </value>
+        public bool IsFullyTrusted => getIsFullyTrusted?.Invoke(appDomain) ?? false;
 
         /// <summary>
         ///     Gets the assemblies that have been loaded into the execution context of this application domain.
