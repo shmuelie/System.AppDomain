@@ -25,6 +25,7 @@ namespace System
         private static readonly MethodInfo unhandledExceptionRemove;
         private static readonly Func<object, string> getBaseDirectory;
         private static readonly Func<object, string> getFriendlyName;
+        private static readonly Func<object, bool> getIsHomogenous;
         private static readonly Func<object, Assembly[]> getAssembliesFunc;
         private static readonly Func<object, string, object> getGetDataFunc;
 
@@ -39,6 +40,7 @@ namespace System
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
             getFriendlyName = RealType.GetInstancePropertyFunction<string>(nameof(FriendlyName));
+            getIsHomogenous = RealType.GetInstancePropertyFunction<bool>(nameof(IsHomogenous));
             getAssembliesFunc = RealType.GetInstanceFunctionFunction<Assembly[]>(nameof(GetAssemblies));
             getGetDataFunc = RealType.GetInstanceFunctionFunction<string, object>(nameof(GetData));
         }
@@ -106,6 +108,14 @@ namespace System
         ///     The friendly name of the default application domain is the file name of the process executable. For example, if the executable used to start the process is "c:\MyAppDirectory\MyAssembly.exe", the friendly name of the default application domain is "MyAssembly.exe".
         /// </remarks>
         public string FriendlyName => getFriendlyName?.Invoke(appDomain) ?? string.Empty;
+
+        /// <summary>
+        ///     Gets a value that indicates whether the current application domain has a set of permissions that is granted to all assemblies that are loaded into the application domain.
+        /// </summary>
+        /// <value>
+        ///     <see langword="true"/> if the current application domain has a homogenous set of permissions; otherwise, <see langword="false"/>.
+        /// </value>
+        public bool IsHomogenous => getIsHomogenous?.Invoke(appDomain) ?? false;
 
         /// <summary>
         ///     Gets the assemblies that have been loaded into the execution context of this application domain.
