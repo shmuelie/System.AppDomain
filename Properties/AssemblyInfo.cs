@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Exposes the hidden System.AppDomain in .NET Core")]
-[assembly: AssemblyDescription("Exposes the hidden System.AppDomain in .NET Core. Currently exposes AppDomain.CurrentDomain, AppDomain.BaseDirectory, AppDomain.AssemblyResolve, AppDomain.TypeResolve, AppDomain.ResourceResolve, and AppDomain.UnhandledException. Required supporting classes are also exposed.")]
+[assembly: AssemblyDescription("Exposes the hidden System.AppDomain in .NET Core. Required supporting classes are also exposed.")]
 [assembly: AssemblyConfiguration(
 #if DEBUG
     "Debug"
