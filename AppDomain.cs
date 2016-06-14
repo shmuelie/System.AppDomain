@@ -23,6 +23,8 @@ namespace System
         private static readonly MethodInfo resourceResolveRemove;
         private static readonly MethodInfo unhandledExceptionAdd;
         private static readonly MethodInfo unhandledExceptionRemove;
+        private static readonly MethodInfo processExitAdd;
+        private static readonly MethodInfo processExitRemove;
         private static readonly Func<object, string> getBaseDirectory;
         private static readonly Func<object, string> getFriendlyName;
         private static readonly Func<object, bool> getIsHomogenous;
@@ -39,6 +41,7 @@ namespace System
             RealType.GetEventMethods(nameof(TypeResolve), out typeResolveAdd, out typeResolveRemove);
             RealType.GetEventMethods(nameof(ResourceResolve), out resourceResolveAdd, out resourceResolveRemove);
             RealType.GetEventMethods(nameof(UnhandledException), out unhandledExceptionAdd, out unhandledExceptionRemove);
+            RealType.GetEventMethods(nameof(ProcessExit), out processExitAdd, out processExitRemove);
             getBaseDirectory = RealType.GetInstancePropertyFunction<string>(nameof(BaseDirectory));
             getFriendlyName = RealType.GetInstancePropertyFunction<string>(nameof(FriendlyName));
             getIsHomogenous = RealType.GetInstancePropertyFunction<bool>(nameof(IsHomogenous));
@@ -68,6 +71,8 @@ namespace System
         private ResolveEventHandler resourceResolve;
         private readonly Delegate unhandledExceptionReal;
         private UnhandledExceptionEventHandler unhandledException;
+        private readonly Delegate processExitReal;
+        private EventHandler processExit;
 
         internal AppDomain(object appDomain)
         {
@@ -89,6 +94,10 @@ namespace System
             if (unhandledExceptionAdd != null)
             {
                 unhandledExceptionReal = this.CreateEventDelegate<UnhandledExceptionEventArgs>(nameof(OnUnhandledException), UnhandledExceptionEventArgs.RealType, RealUnhandledExceptionEventHandler);
+            }
+            if (processExitAdd != null)
+            {
+                processExitReal = this.CreateEventDelegate<EventArgs>(nameof(OnProcessExit), typeof(EventArgs), typeof(EventHandler));
             }
         }
 
@@ -275,6 +284,28 @@ namespace System
                     unhandledException = (UnhandledExceptionEventHandler)Delegate.Remove(unhandledException, value);
                     appDomain.AttachOrDetachEvent(unhandledException, unhandledExceptionReal, unhandledExceptionRemove);
                 }
+            }
+        }
+
+        private void OnProcessExit(EventArgs args) => processExit?.Invoke(this, args);
+
+        /// <summary>
+        ///     Occurs when the default application domain's parent process exits.
+        /// </summary>
+        /// <remarks>
+        ///     The <see cref="EventHandler"/> for this event can perform termination activities, such as closing files, releasing storage and so on, before the process ends.
+        /// </remarks>
+        public event EventHandler ProcessExit
+        {
+            add
+            {
+                appDomain.AttachOrDetachEvent(processExit, processExitReal, processExitAdd);
+                processExit = (EventHandler)Delegate.Combine(processExit, value);
+            }
+            remove
+            {
+                processExit = (EventHandler)Delegate.Remove(processExit, value);
+                appDomain.AttachOrDetachEvent(processExit, processExitReal, processExitRemove);
             }
         }
     }
