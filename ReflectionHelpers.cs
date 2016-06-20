@@ -6,17 +6,66 @@ namespace System
 {
     internal static class ReflectionHelpers
     {
-        public static void GetEventMethods(this Type @this, string eventName, out MethodInfo addMethod, out MethodInfo removeMethod)
+        public static void GetEventMethods(this Type @this, string eventName, out Action<object, Delegate> addMethod, out Action<object, Delegate> removeMethod)
         {
             EventInfo eventInfo = @this.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (eventInfo == null)
             {
-                addMethod = null;
-                removeMethod = null;
-                return;
+                FieldInfo fieldInfo = @this.GetField($"_{eventName}", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (fieldInfo == null)
+                {
+                    addMethod = null;
+                    removeMethod = null;
+                    return;
+                }
+                EventFieldClosure efc = new EventFieldClosure(fieldInfo);
+                addMethod = efc.Add;
+                removeMethod = efc.Remove;
             }
-            addMethod = eventInfo.AddMethod;
-            removeMethod = eventInfo.RemoveMethod;
+            else
+            {
+                addMethod = CreateEventMethod(eventInfo.AddMethod);
+                removeMethod = CreateEventMethod(eventInfo.RemoveMethod);
+            }
+        }
+
+        private sealed class EventFieldClosure
+        {
+            private readonly FieldInfo fieldInfo;
+
+            public EventFieldClosure(FieldInfo fieldInfo)
+            {
+                this.fieldInfo = fieldInfo;
+                Add = new Action<object, Delegate>(AddMethod);
+                Remove = new Action<object, Delegate>(RemoveMethod);
+            }
+
+            private void AddMethod(object @this, Delegate value)
+            {
+                fieldInfo.SetValue(@this, Delegate.Combine((Delegate)fieldInfo.GetValue(@this), value));
+            }
+
+            private void RemoveMethod(object @this, Delegate value)
+            {
+                fieldInfo.SetValue(@this, Delegate.Remove((Delegate)fieldInfo.GetValue(@this), value));
+            }
+
+            public Action<object, Delegate> Add
+            {
+                get;
+            }
+
+            public Action<object, Delegate> Remove
+            {
+                get;
+            }
+        }
+
+        private static Action<object, Delegate> CreateEventMethod(MethodInfo methodInfo)
+        {
+            ParameterExpression thisParameter = Expression.Parameter(typeof(object));
+            ParameterExpression valueParamater = Expression.Parameter(typeof(Delegate));
+            return Expression.Lambda<Action<object, Delegate>>(Expression.Call(thisParameter, methodInfo, Enumerable.Repeat(valueParamater, 1)), false, new ParameterExpression[] { thisParameter, valueParamater }).Compile();
         }
 
         public static Delegate CreateEventDelegate<TEventArgs, TReturn>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
@@ -89,12 +138,12 @@ namespace System
                 }).AsEnumerable()).Compile();
         }
 
-        public static void AttachOrDetachEvent(this object @this, MulticastDelegate @delegate, Delegate realDelegate, MethodInfo manipulationInfo)
+        public static void AttachOrDetachEvent(this object @this, MulticastDelegate @delegate, Delegate realDelegate, Action<object, Delegate> realAction)
         {
             if (@delegate == null || @delegate.GetInvocationList().Length == 0)
             {
 #pragma warning disable HeapAnalyzerImplicitNewArrayCreationRule // Implicit new array creation allocation
-                manipulationInfo.Invoke(@this, new[] { realDelegate });
+                realAction?.Invoke(@this, realDelegate);
 #pragma warning restore HeapAnalyzerImplicitNewArrayCreationRule // Implicit new array creation allocation
             }
         }
