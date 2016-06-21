@@ -30,7 +30,7 @@
         "System.Reflection.TypeExtensions": "4.0.1-beta-23409"
       }
     },
-    "netstandard1.5":
+    "netstandard1.3":
     {
       "dependencies":
       {
