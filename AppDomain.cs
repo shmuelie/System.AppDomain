@@ -140,7 +140,7 @@ namespace System
         ///     Gets the assemblies that have been loaded into the execution context of this application domain.
         /// </summary>
         /// <returns>An array of assemblies in this application domain.</returns>
-        public Assembly[] GetAssemblies() => getAssembliesFunc?.Invoke(appDomain) ?? new Assembly[0];
+        public Assembly[] GetAssemblies() => getAssembliesFunc?.Invoke(appDomain) ?? Array.Empty<Assembly>();
 
         /// <summary>
         ///     Gets the value stored in the current application domain for the specified name.
