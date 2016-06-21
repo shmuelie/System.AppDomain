@@ -11,7 +11,7 @@ namespace System
             EventInfo eventInfo = @this.GetEvent(eventName, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (eventInfo == null)
             {
-                FieldInfo fieldInfo = @this.GetField($"_{eventName}", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                FieldInfo fieldInfo = @this.GetField($"_{char.ToLowerInvariant(eventName[0])}{eventName.Substring(1)}", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (fieldInfo == null)
                 {
                     addMethod = null;
