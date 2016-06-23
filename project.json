@@ -1,7 +1,7 @@
 ﻿{
   "language": "neutral",
   "copyright": "Copyright © 2016 Shmueli Englard",
-  "version": "2.0.9-*",
+  "version": "2.0.10-*",
   "description": "Exposes the hidden System.AppDomain in .NET Core. Required supporting classes are also exposed.",
   "authors":
   [
@@ -64,7 +64,7 @@
     "licenseUrl": "https://github.com/SamuelEnglard/System.AppDomain/blob/master/LICENSE",
     "copyright": "Copyright © 2016 Shmueli Englard",
     "language": "en-us",
-    "releaseNotes": "Exposed more members"
+    "releaseNotes": "Bug fixes, lowered NET Standard, and better ability to link to hidden events"
   },
   "buildOptions":
   {
