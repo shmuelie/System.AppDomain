@@ -88,7 +88,7 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First(),
+                            eParameter.Type.GetConstructor(argsParameter.Type),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
@@ -123,7 +123,7 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First(),
+                            eParameter.Type.GetConstructor(argsParameter.Type),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
@@ -184,13 +184,13 @@ namespace System
             ParameterExpression argParameter = Expression.Parameter(typeof(TArg));
             MethodInfo[] methodInfos = @this.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             MethodInfo methodInfo = null;
-            for(int i = 0; i < methodInfos.Length; i++, methodInfo = null)
+            for (int i = 0; i < methodInfos.Length; i++, methodInfo = null)
             {
                 methodInfo = methodInfos[i];
                 if (methodInfo.Name == functionName)
                 {
                     ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                    if (parameterInfos.Length == 1 && parameterInfos[0].ParameterType.FullName == typeof(TArg).FullName)
+                    if (parameterInfos.Length == 1 && parameterInfos[0].ParameterType.IsSameAs(typeof(TArg)))
                     {
                         break;
                     }
@@ -201,6 +201,38 @@ namespace System
                 return null;
             }
             return Expression.Lambda<Func<object, TArg, TResult>>(Expression.Call(Expression.Convert(thisParameter, @this), methodInfo, Enumerable.Repeat(argParameter, 1)), true, new[] { thisParameter, argParameter }).Compile();
+        }
+
+        public static ConstructorInfo GetDefaultConstructor(this Type @this) => @this.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(ci => ci.GetParameters().Length == 0);
+
+        public static ConstructorInfo GetConstructor(this Type @this, Type argumentType) => @this.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(new ConstructorArgumentFilter(argumentType).Predicate);
+
+        public static bool IsSameAs(this Type @this, Type other) => @this.Equals(other) || (@this.IsAssignableFrom(other) && other.IsAssignableFrom(@this));
+
+        private sealed class ConstructorArgumentFilter
+        {
+            private readonly Type argumentType;
+
+            public ConstructorArgumentFilter(Type argumentType)
+            {
+                this.argumentType = argumentType;
+                Predicate = new Func<ConstructorInfo, bool>(Filter);
+            }
+
+            private bool Filter(ConstructorInfo constructorInfo)
+            {
+                ParameterInfo[] parameterInfos = constructorInfo.GetParameters();
+                if (parameterInfos.Length != 1)
+                {
+                    return false;
+                }
+                return argumentType.IsSameAs(parameterInfos[0].ParameterType);
+            }
+
+            public Func<ConstructorInfo, bool> Predicate
+            {
+                get;
+            }
         }
 
         public static Type RealType(this Type @this) => typeof(string).GetTypeInfo().Assembly.GetType(@this.FullName);
