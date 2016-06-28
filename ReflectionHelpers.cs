@@ -64,8 +64,12 @@ namespace System
         private static Action<object, Delegate> CreateEventMethod(MethodInfo methodInfo)
         {
             ParameterExpression thisParameter = Expression.Parameter(typeof(object));
+            UnaryExpression convertThis = Expression.Convert(thisParameter, methodInfo.DeclaringType);
             ParameterExpression valueParamater = Expression.Parameter(typeof(Delegate));
-            return Expression.Lambda<Action<object, Delegate>>(Expression.Call(thisParameter, methodInfo, Enumerable.Repeat(valueParamater, 1)), false, new ParameterExpression[] { thisParameter, valueParamater }).Compile();
+            UnaryExpression convertValue = Expression.Convert(valueParamater, methodInfo.GetParameters()[0].ParameterType);
+#pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
+            return Expression.Lambda<Action<object, Delegate>>(Expression.Call(convertThis, methodInfo, Enumerable.Repeat(convertValue, 1)), false, new ParameterExpression[] { thisParameter, valueParamater }).Compile();
+#pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
         }
 
         public static Delegate CreateEventDelegate<TEventArgs, TReturn>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
@@ -88,7 +92,7 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructor(argsParameter.Type),
+                            eParameter.Type.GetConstructor(typeof(object)),
                             Enumerable.Repeat(
                                 argsParameter,
                                 1)),
@@ -107,6 +111,7 @@ namespace System
         {
             ParameterExpression eParameter = Expression.Parameter(typeof(TEventArgs));
             ParameterExpression argsParameter = Expression.Parameter(realEventArgsType);
+            ConstructorInfo constructorInfo = eParameter.Type.GetConstructor(typeof(object)) ?? eParameter.Type.GetDefaultConstructor();
             return Expression.Lambda(
                 realHandlerType,
                 Expression.Invoke(
@@ -123,10 +128,10 @@ namespace System
                             1)),
                     Enumerable.Repeat(
                         Expression.New(
-                            eParameter.Type.GetConstructor(argsParameter.Type),
+                            constructorInfo,
                             Enumerable.Repeat(
                                 argsParameter,
-                                1)),
+                                constructorInfo.GetParameters().Length)),
                         1)),
                 false,
 #pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
