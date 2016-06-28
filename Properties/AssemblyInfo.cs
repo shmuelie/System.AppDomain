@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Exposes the hidden System.AppDomain in .NET Core")]
 [assembly: AssemblyDescription("Exposes the hidden System.AppDomain in .NET Core. Required supporting classes are also exposed.")]
 [assembly: AssemblyConfiguration(
-#if DEBUG
+#if DEBUG || TEST
     "Debug"
 #elif RELEASE
     "Release"
@@ -19,7 +19,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("System.AppDomain")]
 [assembly: AssemblyCopyright("Copyright © 2016 Shmueli Englard")]
 [assembly: AssemblyTrademark("")]
+#if !TEST
 [assembly: AssemblyCulture("neutral")]
+#endif
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
