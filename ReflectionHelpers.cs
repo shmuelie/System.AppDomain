@@ -67,9 +67,7 @@ namespace System
             UnaryExpression convertThis = Expression.Convert(thisParameter, methodInfo.DeclaringType);
             ParameterExpression valueParamater = Expression.Parameter(typeof(Delegate));
             UnaryExpression convertValue = Expression.Convert(valueParamater, methodInfo.GetParameters()[0].ParameterType);
-#pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
             return Expression.Lambda<Action<object, Delegate>>(Expression.Call(convertThis, methodInfo, Enumerable.Repeat(convertValue, 1)), false, new ParameterExpression[] { thisParameter, valueParamater }).Compile();
-#pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
         }
 
         public static Delegate CreateEventDelegate<TEventArgs, TReturn>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
@@ -98,9 +96,7 @@ namespace System
                                 1)),
                         1)),
                 false,
-#pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                 (new ParameterExpression[]
-#pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                 {
                     Expression.Parameter(typeof(object)),
                     argsParameter
@@ -134,9 +130,7 @@ namespace System
                                 constructorInfo.GetParameters().Length)),
                         1)),
                 false,
-#pragma warning disable HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                 (new ParameterExpression[]
-#pragma warning restore HeapAnalyzerExplicitNewArrayRule // Explicit new array type allocation
                 {
                     Expression.Parameter(typeof(object)),
                     argsParameter
@@ -147,9 +141,7 @@ namespace System
         {
             if (@delegate == null || @delegate.GetInvocationList().Length == 0)
             {
-#pragma warning disable HeapAnalyzerImplicitNewArrayCreationRule // Implicit new array creation allocation
                 realAction?.Invoke(@this, realDelegate);
-#pragma warning restore HeapAnalyzerImplicitNewArrayCreationRule // Implicit new array creation allocation
             }
         }
 
