@@ -67,7 +67,7 @@ namespace System
             UnaryExpression convertThis = Expression.Convert(thisParameter, methodInfo.DeclaringType);
             ParameterExpression valueParamater = Expression.Parameter(typeof(Delegate));
             UnaryExpression convertValue = Expression.Convert(valueParamater, methodInfo.GetParameters()[0].ParameterType);
-            return Expression.Lambda<Action<object, Delegate>>(Expression.Call(convertThis, methodInfo, Enumerable.Repeat(convertValue, 1)), false, new ParameterExpression[] { thisParameter, valueParamater }).Compile();
+            return Expression.Lambda<Action<object, Delegate>>(Expression.Call(convertThis, methodInfo, Enumerable.Repeat(convertValue, 1)), false, thisParameter.Collect().AndThis(valueParamater)).Compile();
         }
 
         public static Delegate CreateEventDelegate<TEventArgs, TReturn>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
@@ -96,11 +96,7 @@ namespace System
                                 1)),
                         1)),
                 false,
-                (new ParameterExpression[]
-                {
-                    Expression.Parameter(typeof(object)),
-                    argsParameter
-                }).AsEnumerable()).Compile();
+                Expression.Parameter(typeof(object)).Collect().AndThis(argsParameter)).Compile();
         }
 
         public static Delegate CreateEventDelegate<TEventArgs>(this object @this, string onMethodName, Type realEventArgsType, Type realHandlerType) where TEventArgs : EventArgs
@@ -130,11 +126,7 @@ namespace System
                                 constructorInfo.GetParameters().Length)),
                         1)),
                 false,
-                (new ParameterExpression[]
-                {
-                    Expression.Parameter(typeof(object)),
-                    argsParameter
-                }).AsEnumerable()).Compile();
+                Expression.Parameter(typeof(object)).Collect().AndThis(argsParameter)).Compile();
         }
 
         public static void AttachOrDetachEvent(this object @this, MulticastDelegate @delegate, Delegate realDelegate, Action<object, Delegate> realAction)
@@ -197,7 +189,7 @@ namespace System
             {
                 return null;
             }
-            return Expression.Lambda<Func<object, TArg, TResult>>(Expression.Call(Expression.Convert(thisParameter, @this), methodInfo, Enumerable.Repeat(argParameter, 1)), true, new[] { thisParameter, argParameter }).Compile();
+            return Expression.Lambda<Func<object, TArg, TResult>>(Expression.Call(Expression.Convert(thisParameter, @this), methodInfo, Enumerable.Repeat(argParameter, 1)), true, thisParameter.Collect().AndThis(argParameter)).Compile();
         }
 
         public static ConstructorInfo GetDefaultConstructor(this Type @this) => @this.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(ci => ci.GetParameters().Length == 0);
