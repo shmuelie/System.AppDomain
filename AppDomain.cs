@@ -74,7 +74,7 @@ namespace System
         private readonly Delegate processExitReal;
         private EventHandler processExit;
 
-        internal AppDomain(object appDomain)
+        private AppDomain(object appDomain)
         {
             appDomain.NotNull(nameof(appDomain));
             appDomain.InstanceOf(nameof(appDomain), RealType);
