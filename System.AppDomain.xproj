@@ -18,7 +18,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties project_1test_1json__JSONSchema="http://json.schemastore.org/project" __JSONSchema="http://json.schemastore.org/project-1.0.0-rc2" />
+      <UserProperties __JSONSchema="http://json.schemastore.org/project-1.0.0-rc2" />
     </VisualStudio>
   </ProjectExtensions>
   <Target AfterTargets="CoreCompile" Name="Pack">
