@@ -121,7 +121,7 @@ namespace System
         public string FriendlyName => getFriendlyName?.Invoke(appDomain) ?? string.Empty;
 
         /// <summary>
-        ///     Gets a value that indicates whether the current application domain has a set of permissions that is granted to all assemblies that are loaded into the application domain.
+        ///     Gets a value indicating whether the current application domain has a set of permissions that is granted to all assemblies that are loaded into the application domain.
         /// </summary>
         /// <value>
         ///     <see langword="true"/> if the current application domain has a homogenous set of permissions; otherwise, <see langword="false"/>.
@@ -129,7 +129,7 @@ namespace System
         public bool IsHomogenous => getIsHomogenous?.Invoke(appDomain) ?? false;
 
         /// <summary>
-        ///     Gets a value that indicates whether assemblies that are loaded into the current application domain execute with full trust.
+        ///     Gets a value indicating whether assemblies that are loaded into the current application domain execute with full trust.
         /// </summary>
         /// <value>
         ///     <see langword="true"/> if assemblies that are loaded into the current application domain execute with full trust; otherwise, <see langword="false"/>.
