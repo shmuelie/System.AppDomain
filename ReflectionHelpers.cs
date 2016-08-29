@@ -196,6 +196,17 @@ namespace System
 
         public static ConstructorInfo GetConstructor(this Type @this, Type argumentType) => @this.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(new ConstructorArgumentFilter(argumentType).Predicate);
 
+        public static Func<TArg, object> CreateConstructor<TArg>(this Type @this)
+        {
+            ConstructorInfo constructorInfo = @this.GetConstructor(typeof(TArg));
+            if (constructorInfo == null)
+            {
+                return null;
+            }
+            ParameterExpression arg = Expression.Parameter(typeof(TArg));
+            return Expression.Lambda<Func<TArg, object>>(Expression.New(constructorInfo, arg.Collect()), true, arg.Collect()).Compile();
+        }
+
         public static bool IsSameAs(this Type @this, Type other) => @this.Equals(other) || (@this.IsAssignableFrom(other) && other.IsAssignableFrom(@this));
 
         private sealed class ConstructorArgumentFilter
