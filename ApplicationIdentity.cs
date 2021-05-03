@@ -1,4 +1,6 @@
-﻿namespace System
+﻿using System.Runtime.CompilerServices;
+
+namespace System
 {
     /// <summary>
     ///     Provides the ability to uniquely identify a manifest-activated application. This class cannot be inherited.
@@ -15,6 +17,15 @@
         private static readonly Func<object, string> getFullName = RealType.GetInstancePropertyFunction<string>(nameof(FullName));
         private static readonly Func<object, string> toString = RealType.GetInstanceFunctionFunction<string>(nameof(ToString));
 
+        private static readonly ConditionalWeakTable<object, ApplicationIdentity> cache = new ConditionalWeakTable<object, ApplicationIdentity>();
+
+        internal static ApplicationIdentity CacheNew(object applicationIdentity)
+        {
+            applicationIdentity.NotNull(nameof(applicationIdentity));
+            applicationIdentity.InstanceOf(nameof(applicationIdentity), RealType);
+            return cache.GetValue(applicationIdentity, ai => new ApplicationIdentity(ai));
+        }
+
         private readonly object applicationIdentity;
 
         /// <summary>
@@ -28,10 +39,8 @@
             applicationIdentity = externalConstructor(applicationIdentityFullName);
         }
 
-        internal ApplicationIdentity(object applicationIdentity)
+        private ApplicationIdentity(object applicationIdentity)
         {
-            applicationIdentity.NotNull(nameof(applicationIdentity));
-            applicationIdentity.InstanceOf(nameof(applicationIdentity), RealType);
             this.applicationIdentity = applicationIdentity;
         }
 
